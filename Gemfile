@@ -30,6 +30,13 @@ gem "jbuilder"
 # database postgresql gem
 gem "pg"
 
+# A gem required to have the best experience
+gem "responders"
+
+# A gem that handles registeration & login 
+gem "devise"
+
+
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"
 
