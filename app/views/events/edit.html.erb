@@ -1,0 +1,19 @@
+<h1>Edit Event</h1>
+<%= form_for @event do |f| %>
+  <div>
+    <%= f.label :location %>
+    <%= f.text_field :location %>
+  </div>
+
+  <div>
+   <%= f.label :date %>
+   <%= f.date_field :date %>
+  </div>
+
+  <div>
+    <%= f.label :public %>
+    <%= f.check_box :public %>
+  </div>
+
+  <%= f.submit "Submit", disable_with: 'Submiting...' %>
+<% end %>
