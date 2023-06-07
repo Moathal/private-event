@@ -2,4 +2,9 @@
 <h3><%= @event.location %></h3>
 <h3><%= @event.date %></h3>
 <h3><%= @event.creator.fullname %></h3>
+<%= button_to "Attend", event_path(@event), method: :attend, data: { confirm: "Are you sure want to be blazed?" }, class: "btn btn-danger" %>
 <h2>Attendances</h2>
+<% @event.attendees.each do | partyholic | %>
+  <h3><% partyholic.fullname %></h3>
+  <%= link_to 'See profile', user_path(attendee.id) %>
+<% end %>
