@@ -1,6 +1,6 @@
 class EventsController < ApplicationController
   def index
-    @events = Event.all
+    @events = Event.where(public: true ).or(Event.where(creator: current_user))
   end
 
   def show
@@ -21,6 +21,6 @@ class EventsController < ApplicationController
   end
 
   def event_params
-    params.require(:event).permit(:location, :date)
+    params.require(:event).permit(:location, :date, :public)
   end
 end
