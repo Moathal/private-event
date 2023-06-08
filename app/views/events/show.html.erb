@@ -3,15 +3,17 @@
 <h3><%= @event.date %></h3>
 <h3><%= @event.creator.fullname %></h3>
 
-<% if @current_user && @current_user.id !== @event.creator_id %>
-  <%= button_to "Attend", event_path(@event), method: :attend, data: { confirm: "Are you sure want to be blazed?" }, class: "btn btn-danger" %>
+<% if current_user %>
+  <%= button_to "Attend", attend_event_path(@event), method: :post, data: { confirm: "Are you sure want to be blazed?" }, class: "btn btn-danger" %>
 <% elsif @current_user %>
   <%= link_to 'Edit event', edit_event_path(@event.id) %>
 <% end %>
 
 <h2>Attendances</h2>
 
-<% @event.attendees.each do | partyholic | %>
-  <h3><% partyholic.fullname %></h3>
-  <%= link_to 'See profile', user_path(partyholic.id) %>
+<% if @event.attendees %>
+  <% @event.attendees.each do | partyholic | %>
+    <h3><% partyholic.fullname %></h3>
+    <%= link_to 'See profile', user_path(partyholic.id) %>
+  <% end %>
 <% end %>

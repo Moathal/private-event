@@ -1,6 +1,6 @@
 <h1>All Partyholics</h1>
 
-<% @user.each do | hepee | %>
+<% @users.each do | hepee | %>
   <h2><%= hepee.fullname %></h2>
   <small><%= hepee.birthday %></small>
   <%= link_to "See all his events", user_path(hepee.id) %>
