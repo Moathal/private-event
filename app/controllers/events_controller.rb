@@ -11,6 +11,7 @@ class EventsController < ApplicationController
     @event = current_user.events.build
   end
 
+  
   def create
     @event = current_user.events.build(event_params)
     if @event.save
@@ -19,11 +20,30 @@ class EventsController < ApplicationController
       render :new
     end
   end
-
+  
   def attend
     @event = Event.find(params[:id])
     current_user.attended_events << @event
     redirect_to @event
+  end
+  
+  def edit
+    @event = Event.find(params[:id])
+  end
+
+  def update
+    @event = Event.find(params[:id])
+    if @event.update(event_params)
+      redirect_to @event, notice: "Event updated successfully."
+    else
+      render :edit
+    end
+  end
+
+  def destroy
+    @event = Event.find(params[:id])
+    @event.destroy
+    redirect_to events_path, notice: "Event is deleted successfully."
   end
 
   private
