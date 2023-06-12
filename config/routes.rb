@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   resources :events, only: [:edit, :update, :show, :destroy, :index, :new, :create] do
     member do
       post 'attend'
+      delete 'attend' => 'events#attend'
     end
   end
   

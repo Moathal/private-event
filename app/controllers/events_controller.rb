@@ -1,5 +1,6 @@
 class EventsController < ApplicationController
   before_action :authenticate_user!, except: [:index, :show]
+
   def index
     @events = Event.all.where(public:true).or(Event.where(creator: current_user))
   end
@@ -24,7 +25,13 @@ class EventsController < ApplicationController
   
   def attend
     @event = Event.find(params[:id])
-    current_user.attended_events << @event
+    
+    if current_user.attended_events.include?(@event)
+      current_user.attended_events.delete(@event)
+    else
+      current_user.attended_events << @event
+    end
+
     redirect_to @event
   end
   

@@ -4,10 +4,14 @@
 <h3><%= @event.creator.fullname %></h3>
 
 <% if !current_user.nil? && current_user.id != @event.creator_id%>
-  <%= button_to "Attend", attend_event_path(@event), method: :post, data: { confirm: "Are you sure want to be blazed?" }, class: "btn btn-danger" %>
+  <% if current_user.attended_events.include?(@event) %>
+    <%= button_to "Attend", attend_event_path(@event), method: :post %>
+  <% else %>
+    <%= button_to "Cancel Attendance", attend_event_path(@event), method: :delete %>
+  <% end %>
 <% elsif current_user && current_user.id == @event.creator.id %>
+    <%= button_to "Cancel the event", @event, method: :delete, data: {confirm: "Are you sure you want to cancel this event?!!"} %>
   <%= link_to 'Edit event', edit_event_path(@event.id) %>
-  <%= button_to "Cancel the event", @event, method: :delete, data: {confirm: "Are you sure you want to cancel this event?!!"} %>
 <% end %>
 
 <h2>Attendances</h2>
