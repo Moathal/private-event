@@ -1,7 +1,7 @@
 class EventsController < ApplicationController
   before_action :authenticate_user!, except: [:index, :show]
   def index
-    @events = Event.where(public: true ).or(Event.where(creator: current_user))
+    @events = Event.all.where(public:true).or(Event.where(creator: current_user))
   end
 
   def show
