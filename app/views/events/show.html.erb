@@ -5,9 +5,9 @@
 
 <% if !current_user.nil? && current_user.id != @event.creator_id%>
   <% if current_user.attended_events.include?(@event) %>
-    <%= button_to "Attend", attend_event_path(@event), method: :post %>
-  <% else %>
     <%= button_to "Cancel Attendance", attend_event_path(@event), method: :delete %>
+  <% else %>
+    <%= button_to "Attend", attend_event_path(@event), method: :post %>
   <% end %>
 <% elsif current_user && current_user.id == @event.creator.id %>
     <%= button_to "Cancel the event", @event, method: :delete, data: {confirm: "Are you sure you want to cancel this event?!!"} %>

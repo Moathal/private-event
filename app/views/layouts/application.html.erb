@@ -14,6 +14,7 @@
      <p class="notice"><%= notice %></p>
        <p class="alert"><%= alert %></p>
     <% if user_signed_in? %>
+      <h2><%= current_user.fullname %></h2>
       <%= button_to "sign out", destroy_user_session_path, method: :delete %>
       <%= link_to "Edit profile", edit_user_registration_path, method: :get %>
     <% elsif action_name == 'index' || action_name == 'show' %>
