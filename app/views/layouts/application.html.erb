@@ -16,8 +16,9 @@
     <% if user_signed_in? %>
       <%= button_to "sign out", destroy_user_session_path, method: :delete %>
       <%= link_to "Edit profile", edit_user_registration_path, method: :get %>
-    <% else %>
+    <% elsif action_name == 'index' || action_name == 'show' %>
       <%= link_to "Sign_in", new_user_session_path, method: :get %>
+      <%= link_to "Edit profile", new_user_registration_path, method: :get %>
     <% end %>
     <%= yield %>
   </body>
