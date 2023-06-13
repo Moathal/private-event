@@ -1,0 +1,13 @@
+<h1>Events</h1>
+<% @events.each do | event | %>
+  <h3><%= event.location %></h3>
+  <h3><%= event.date %></h3>
+  <h3><%= event.creator.fullname %></h3>
+  <%= link_to "Show event", event_path(event.id) %>
+  <br>
+  <br>
+<% end %>
+<br>
+<br>
+<br>
+<%= link_to 'Add new Event', new_event_path %>

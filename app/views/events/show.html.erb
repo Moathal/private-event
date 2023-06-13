@@ -1,0 +1,24 @@
+<h1>The Event</h1>
+<h3><%= @event.location %></h3>
+<h3><%= @event.date %></h3>
+<h3><%= @event.creator.fullname %></h3>
+
+<% if !current_user.nil? && current_user.id != @event.creator_id%>
+  <% if current_user.attended_events.include?(@event) %>
+    <%= button_to "Cancel Attendance", attend_event_path(@event), method: :delete %>
+  <% else %>
+    <%= button_to "Attend", attend_event_path(@event), method: :post %>
+  <% end %>
+<% elsif current_user && current_user.id == @event.creator.id %>
+    <%= button_to "Cancel the event", @event, method: :delete, data: {confirm: "Are you sure you want to cancel this event?!!"} %>
+  <%= link_to 'Edit event', edit_event_path(@event.id) %>
+<% end %>
+
+<h2>Attendances</h2>
+
+<% if @event.attendees %>
+  <% @event.attendees.each do | partyholic | %>
+    <h3><%= partyholic.fullname %></h3>
+    <%= link_to 'See profile', user_path(partyholic.id) %>
+  <% end %>
+<% end %>
