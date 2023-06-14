@@ -27,13 +27,21 @@ class EventsController < ApplicationController
     @event = Event.find(params[:id])
     
     if current_user.attended_events.include?(@event) 
-      @event.update(status: @event.pending? ? :accepted : :rejected)
+      case @event.status.to_sym
+      when :accepted
+        @event.update(status: :rejected)
+      when :rejected, :pending
+        @event.update(status: :accepted)
+      end
     else
-      current_user.attended_events << @event
-      @event.update(status: :accepted)
+      current_user.attendances.create(event: @event, status: :accepted)
     end
-
-    redirect_to @event
+    respond_to do |format|
+      format.html { redirect_to @event }
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.update("event_attendances", partial: "events/attendances", locals: { event: @event })
+      end
+    end
   end
   
   def edit
