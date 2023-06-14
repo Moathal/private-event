@@ -13,7 +13,6 @@ class EventsController < ApplicationController
     @event = current_user.events.build
   end
 
-  
   def create
     @event = current_user.events.build(event_params)
     if @event.save
@@ -22,10 +21,10 @@ class EventsController < ApplicationController
       render :new
     end
   end
-  
+
   def attend
     @event = Event.find(params[:id])
-    
+
     if current_user.attended_events.include?(@event) 
       case @event.status.to_sym
       when :accepted
@@ -43,7 +42,20 @@ class EventsController < ApplicationController
       end
     end
   end
-  
+
+  def invite
+    @event = Event.find(params[:id])
+    attendance = current_user.attendances.find_or_initialize_by(event_id: @event.id)
+
+    if attendance.new_record?
+      attendance.invited_user = true
+      attendance.status = :pending
+      attendance.save
+    end
+    
+    redirect_to @event
+  end
+
   def edit
     @event = Event.find(params[:id])
   end
