@@ -26,10 +26,11 @@ class EventsController < ApplicationController
   def attend
     @event = Event.find(params[:id])
     
-    if current_user.attended_events.include?(@event)
-      current_user.attended_events.delete(@event)
+    if current_user.attended_events.include?(@event) 
+      @event.update(status: @event.pending? ? :accepted : :rejected)
     else
       current_user.attended_events << @event
+      @event.update(status: :accepted)
     end
 
     redirect_to @event
