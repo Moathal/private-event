@@ -29,7 +29,7 @@ class EventsController < ApplicationController
       case @event.status.to_sym
       when :accepted
         @event.update(status: :rejected)
-      when :rejected, :pending
+      when :rejected, :pending, :cancelled
         @event.update(status: :accepted)
       end
     else
@@ -46,14 +46,68 @@ class EventsController < ApplicationController
   def invite
     @event = Event.find(params[:id])
     attendance = current_user.attendances.find_or_initialize_by(event_id: @event.id)
+    attendance.invited_user = true
+    attendance.status = :pending
+    attendance.save
 
-    if attendance.new_record?
-      attendance.invited_user = true
-      attendance.status = :pending
-      attendance.save
+    respond_to do |format|
+        format.html { redirect_to @event }
+        format.turbo_stream { render turbo_stream: turbo_stream.append("invite-button", partial: "invitations/invite_button", locals: { event: @event }) }
     end
-    
-    redirect_to @event
+  end
+
+  def cancel_invitation
+  @event = Event.find(params[:id])
+  attendance = current_user.attendances.find_by(event_id: @event.id)
+
+    if attendance
+      attendance.update(status: :canceled, invited_user: false)
+      # Send notification to the invited user here
+
+      respond_to do |format|
+        format.html { redirect_to @event }
+        format.turbo_stream { render turbo_stream: turbo_stream.replace("invite-button", partial: "invitations/invite_button", locals: { event: @event }) }
+      end
+    else
+      flash[:error] = "Invitation has already been canceled."
+      redirect_to @event
+    end
+  end
+
+  def accept_invite
+    @event = Event.find_by(params[:id])
+    user_attend = current_user.attendances.find_by(@event.id)
+    if !user_attend.nil?
+      case !user_attend.status.to_sym
+        when :cancelled
+          flash[:error] = "Invitation has been canceled."
+          redirect_to @event
+        when :pending
+          user_attend.update(status: :accepted, invited_user: true)
+          user_attend.save
+      end
+    else
+      flash[:error] = "We apologize for the inconvinience either event was canceled or you were never invited"
+      redirect_to @event
+    end
+  end
+
+  def reject_invite
+    @event = Event.find_by(params[:id])
+    user_attend = current_user.attendances.find_by(@event.id)
+    if !user_attend.nil?
+      case !user_attend.status.to_sym
+        when :cancelled
+          flash[:error] = "Invitation has been canceled."
+          redirect_to @event
+        when :pending
+          user_attend.update(status: :rejected, invited_user: true)
+          user_attend.save
+      end
+    else
+      flash[:error] = "We apologize for the inconvinience either event was canceled or you were never invited"
+      redirect_to @event
+    end
   end
 
   def edit
