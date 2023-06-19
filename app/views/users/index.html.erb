@@ -5,3 +5,11 @@
   <small><%= hepee.birthday %></small>
   <%= link_to "See all his events", user_path(hepee.id) %>
 <% end %>
+
+<br>
+<br>
+  <% if current_user %>
+    <%= link_to 'All My events', user_path(current_user.id) %>
+  <% end %>
+  <%= link_to 'All events', events_path %>
+</div>

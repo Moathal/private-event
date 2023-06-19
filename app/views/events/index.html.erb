@@ -8,6 +8,12 @@
   <br>
 <% end %>
 <br>
+<div style="display: flex; flex-direction: row; gap: 1rem;">
+  <% if current_user %>
+    <%= link_to 'All My events', user_path(current_user.id) %>
+  <% end %>
+  <%= link_to 'All users', users_path %>
+</div>
 <br>
 <br>
 <%= link_to 'Add new Event', new_event_path %>

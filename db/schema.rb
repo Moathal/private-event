@@ -18,18 +18,12 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_07_112457) do
     t.string "location"
     t.bigint "user_id", null: false
     t.bigint "event_id", null: false
-    t.bigint "invited_user_id"
-    t.bigint "attendances_id"
-    t.bigint "status_id"
-    t.bigint "integer_id"
+    t.boolean "invited_user"
+    t.integer "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["attendances_id"], name: "index_attendances_on_attendances_id"
     t.index ["event_id", "user_id"], name: "index_attendances_on_event_id_and_user_id", unique: true
     t.index ["event_id"], name: "index_attendances_on_event_id"
-    t.index ["integer_id"], name: "index_attendances_on_integer_id"
-    t.index ["invited_user_id"], name: "index_attendances_on_invited_user_id"
-    t.index ["status_id"], name: "index_attendances_on_status_id"
     t.index ["user_id"], name: "index_attendances_on_user_id"
   end
 
@@ -59,6 +53,5 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_07_112457) do
 
   add_foreign_key "attendances", "events"
   add_foreign_key "attendances", "users"
-  add_foreign_key "attendances", "users", column: "invited_user_id"
   add_foreign_key "events", "users", column: "creator_id"
 end

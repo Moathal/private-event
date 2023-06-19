@@ -3,6 +3,7 @@ class EventsController < ApplicationController
 
   def index
     @events = Event.all.where(public:true).or(Event.where(creator: current_user))
+    @user_events = current_user.events.all.where(creator: current_user)
   end
 
   def show
@@ -16,7 +17,7 @@ class EventsController < ApplicationController
   def create
     @event = current_user.events.build(event_params)
     if @event.save
-      redirect_to @event, notice: 'Event was created succefully'
+      redirect_to @event, notice: 'Event was created successfully'
     else
       render :new
     end

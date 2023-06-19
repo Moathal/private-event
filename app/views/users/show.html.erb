@@ -25,3 +25,8 @@
   <small><% event.date %></small>
   <h4><%= link_to 'See Event', event_path(event.id) %></h4>
 <% end %>
+
+<div style="display: flex; flex-direction: row; gap: 1rem;">
+  <%= link_to 'All events', events_path %>
+  <%= link_to 'All users', users_path %>
+</div>
