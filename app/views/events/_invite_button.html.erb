@@ -1,0 +1,5 @@
+<% if @event.attendees.include?(current_user) %>
+  <%= link_to "Cancel Invitation", cancel_invitation_event_path(@event), method: :delete, remote: true, class: "btn btn-danger" %>
+<% else %>
+  <%= link_to "Invite", invite_event_path(@event), method: :post, remote: true, class: "btn btn-primary" %>
+<% end %>

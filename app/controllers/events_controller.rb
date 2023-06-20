@@ -3,7 +3,7 @@ class EventsController < ApplicationController
 
   def index
     @events = Event.all.where(public:true).or(Event.where(creator: current_user))
-    @user_events = current_user.events.all.where(creator: current_user)
+    @user_events = current_user.events.all.where(creator: current_user) if current_user
   end
 
   def show

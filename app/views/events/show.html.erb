@@ -3,27 +3,41 @@
 <h3><%= @event.date %></h3>
 <h3><%= @event.creator.fullname %></h3>
 
-<% if !current_user.nil? && current_user.id != @event.creator_id%>
+<% if !current_user.nil? && current_user.id != @event.creator_id %>
   <% if current_user.attended_events.include?(@event) %>
-    <%= button_to "Cancel Attendance", attend_event_path(@event), method: :delete %>
+    <%= button_to "Cancel Attendance", attend_event_path(@event), method: :delete, remote: true %>
   <% else %>
-    <%= button_to "Attend", attend_event_path(@event), method: :post %>
+    <%= button_to "Attend", attend_event_path(@event), method: :post, remote: true %>
   <% end %>
 <% elsif current_user && current_user.id == @event.creator.id %>
-    <%= button_to "Cancel the event", @event, method: :delete, data: {confirm: "Are you sure you want to cancel this event?!!"} %>
+  <%= button_to "Cancel the event", @event, method: :delete, data: { confirm: "Are you sure you want to cancel this event?!" }, remote: true %>
   <%= link_to 'Edit event', edit_event_path(@event.id) %>
+  <%= form_with(model: @event, url: invite_event_path(@event), method: :post, data: { remote: true }) do |form| %>
+    <%= form.label :invited_user_ids, "Select users to invite:" %>
+      <%= form.select :invited_user_ids, User.left_outer_joins(:attendances).where("attendances.status IS NULL OR attendances.status NOT IN (?)", [-2, -1]).distinct.collect { |user| [user.fullname, user.id] }, {}, { multiple: true } %>
+  <% end %>
 <% end %>
 
 <h2>Attendances</h2>
 
-<% if @event.attendees %>
-  <% @event.attendees.each do | partyholic | %>
-    <h3><%= partyholic.fullname %></h3>
-    <%= link_to 'See profile', user_path(partyholic.id) %>
-  <% end %>
+<% if @event.attendances.any? %>
+  <ul>
+    <% @event.attendances.each do |attendance| %>
+      <% user = attendance.user %>
+      <li>
+        <%= user.fullname %>
+        <% if attendance.invited_user %>
+          <%= link_to "Cancel Invitation", cancel_invitation_event_path(@event), method: :post, data: { user_id: user.id }, remote: true %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
 <% end %>
 
 <div style="display: flex; flex-direction: row; gap: 1rem;">
-<%= link_to 'All events', events_path %>
-<%= link_to 'All users', users_path %>
+  <%= link_to 'All events', events_path %>
+  <%= link_to 'All users', users_path %>
 </div>
+
+<%= turbo_stream_from "event_attendances" %>
+<%= turbo_stream_from "invite-button" %>
