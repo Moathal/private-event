@@ -12,9 +12,15 @@
 <% elsif current_user && current_user.id == @event.creator.id %>
   <%= button_to "Cancel the event", @event, method: :delete, data: { confirm: "Are you sure you want to cancel this event?!" }, remote: true %>
   <%= link_to 'Edit event', edit_event_path(@event.id) %>
-  <%= form_with(model: @event, url: invite_event_path(@event), method: :post, data: { remote: true }) do |form| %>
-    <%= form.label :invited_user_ids, "Select users to invite:" %>
-      <%= form.select :invited_user_ids, User.left_outer_joins(:attendances).where("attendances.status IS NULL OR attendances.status NOT IN (?)", [-2, -1]).distinct.collect { |user| [user.fullname, user.id] }, {}, { multiple: true } %>
+  <%= form_with(url: invite_event_path) do |form| %>
+    <% @users.each do |user| %>
+        <label>
+        <%= form.check_box :user_ids, { multiple: true }, user.id, nil %>
+        <%= user.fullname %>
+      </label>
+    <% end %>
+    <%= form.hidden_field :event_id, value: @event.id %>
+    <%= form.submit "Invite" %>
   <% end %>
 <% end %>
 

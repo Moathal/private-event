@@ -8,6 +8,7 @@ class EventsController < ApplicationController
 
   def show
     @event = Event.find(params[:id])
+    @users = User.all
   end
 
   def new
@@ -45,18 +46,15 @@ class EventsController < ApplicationController
   end
 
   def invite
-    @event = Event.find(params[:id])
-    attendance = current_user.attendances.find_or_initialize_by(event_id: @event.id)
-    attendance.invited_user = true
-    attendance.status = :pending
-    attendance.save
+    event = Event.find(params[:event_id])
+    user_ids = params[:user_ids]
 
-    respond_to do |format|
-        format.html { redirect_to @event }
-        format.turbo_stream { render turbo_stream: turbo_stream.append("invite-button", partial: "invitations/invite_button", locals: { event: @event }) }
+    user_ids.each do |user_id|
+      Attendance.create(event_id: event.id, user_id: user_id, status: :pending, invited_user: true)
     end
-  end
 
+    redirect_to event, notice: 'Invitations sent successfully.'
+  end
   def cancel_invitation
   @event = Event.find(params[:id])
   attendance = current_user.attendances.find_by(event_id: @event.id)
