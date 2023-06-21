@@ -32,8 +32,8 @@
       <% user = attendance.user %>
       <li>
         <%= user.fullname %>
-        <% if attendance.invited_user %>
-          <%= link_to "Cancel Invitation", cancel_invitation_event_path(@event), method: :post, data: { user_id: user.id }, remote: true %>
+        <% if attendance.invited_user? %>
+          <%= button_to "Cancel Invitation", cancel_invitation_event_path(@event), method: :post, data: { user_id: user.id } %>
         <% end %>
       </li>
     <% end %>
@@ -44,6 +44,3 @@
   <%= link_to 'All events', events_path %>
   <%= link_to 'All users', users_path %>
 </div>
-
-<%= turbo_stream_from "event_attendances" %>
-<%= turbo_stream_from "invite-button" %>
