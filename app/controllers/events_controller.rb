@@ -2,13 +2,18 @@ class EventsController < ApplicationController
   before_action :authenticate_user!, except: [:index, :show]
 
   def index
-    @events = Event.all.where(public:true).or(Event.where(creator: current_user))
+    @events = Event.all.where(public: true).or(Event.where(creator: current_user))
     @user_events = current_user.events.all.where(creator: current_user) if current_user
   end
 
   def show
     @event = Event.find(params[:id])
-    @users = User.all
+    invited_ids = @event.attendances.where(invited_user: false).where(status: Attendance.statuses.slice(:rejected, :canceled).values).pluck(:user_id)
+    subquery = User.where.not(id: invited_ids).where.not(id: @event.creator_id)
+    @users = User.where.not(id: invited_ids).where.not(id: @event.creator_id).or(subquery).where.not(id: Attendance.pluck(:user_id))
+    puts '/\/\/\/\/\/'
+    puts @users.present?
+    puts '/\/\/\/\/\/'
   end
 
   def new
@@ -55,18 +60,19 @@ class EventsController < ApplicationController
 
     redirect_to event, notice: 'Invitations sent successfully.'
   end
+
   def cancel_invitation
   @event = Event.find(params[:id])
   attendance = current_user.attendances.find_by(event_id: @event.id)
-
+  
     if attendance
       attendance.update(status: :canceled, invited_user: false)
       # Send notification to the invited user here
-
-      respond_to do |format|
-        format.html { redirect_to @event }
-        format.turbo_stream { render turbo_stream: turbo_stream.replace("invite-button", partial: "invitations/invite_button", locals: { event: @event }) }
-      end
+      redirect_to @event
+      # respond_to do |format|
+      #   format.html { redirect_to @event }
+      #   format.turbo_stream { render turbo_stream: turbo_stream.replace("invite-button", partial: "invitations/invite_button", locals: { event: @event }) }
+      # end
     else
       flash[:error] = "Invitation has already been canceled."
       redirect_to @event

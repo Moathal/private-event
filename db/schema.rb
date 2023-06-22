@@ -15,7 +15,6 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_07_112457) do
   enable_extension "plpgsql"
 
   create_table "attendances", force: :cascade do |t|
-    t.string "location"
     t.bigint "user_id", null: false
     t.bigint "event_id", null: false
     t.boolean "invited_user"

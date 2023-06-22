@@ -12,15 +12,19 @@
 <% elsif current_user && current_user.id == @event.creator.id %>
   <%= button_to "Cancel the event", @event, method: :delete, data: { confirm: "Are you sure you want to cancel this event?!" }, remote: true %>
   <%= link_to 'Edit event', edit_event_path(@event.id) %>
-  <%= form_with(url: invite_event_path) do |form| %>
-    <% @users.each do |user| %>
-        <label>
-        <%= form.check_box :user_ids, { multiple: true }, user.id, nil %>
-        <%= user.fullname %>
-      </label>
+  <% if @users.present? %>
+    <%= form_with(url: invite_event_path) do |form| %>
+      <% @users.each do |user| %>
+         <label>
+          <%= form.check_box :user_ids, { multiple: true }, user.id, nil %>
+          <%= user.fullname %>
+        </label>
+      <% end %>
+      <%= form.hidden_field :event_id, value: @event.id %>
+      <%= form.submit "Invite" %>
     <% end %>
-    <%= form.hidden_field :event_id, value: @event.id %>
-    <%= form.submit "Invite" %>
+  <% else %>
+    <h5>No Users!!</h5>
   <% end %>
 <% end %>
 
@@ -29,13 +33,18 @@
 <% if @event.attendances.any? %>
   <ul>
     <% @event.attendances.each do |attendance| %>
-      <% user = attendance.user %>
-      <li>
-        <%= user.fullname %>
-        <% if attendance.invited_user? %>
-          <%= button_to "Cancel Invitation", cancel_invitation_event_path(@event), method: :post, data: { user_id: user.id } %>
-        <% end %>
-      </li>
+    <li><%= @event.creator.fullname %></li>
+      <% if attendance.status != "canceled" || attendance.status != "rejected" %>
+        <li>
+          <%= attendance.user.fullname %>
+          <% if attendance.invited_user == true %>
+            <br>
+            <%= attendance.status %>
+            <%= button_to "Cancel Invitation", cancel_invitation_event_path(@event.id), method: :post, data: { user_id: attendance.user.id } %>
+         <% end %>
+       </li>
+            <br>
+      <% end %>
     <% end %>
   </ul>
 <% end %>

@@ -8,7 +8,7 @@ Rails.application.routes.draw do
       post 'attend'
       delete 'attend' => 'events#attend'
       post 'invite'
-      delete 'cancel_invitation' => 'events#cancel_invitation'
+      post 'cancel_invitation' => 'events#cancel_invitation'
     end
   end
   
