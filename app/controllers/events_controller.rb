@@ -10,12 +10,8 @@ class EventsController < ApplicationController
     @event = Event.find(params[:id])
     uninvited_ids = @event.attendances.where(invited_user: false).or(@event.attendances.where(status: "rejected")).pluck(:user_id)
     invited_ids = @event.attendances.where(invited_user: true).pluck(:user_id)
-    
     subquery = User.where(id: uninvited_ids)
     @users = User.where.not(id: invited_ids).or(subquery).distinct
-    puts '/\/\/\/\/\/'
-    puts @users.present?
-    puts '/\/\/\/\/\/'
   end
 
   def new
@@ -101,7 +97,7 @@ class EventsController < ApplicationController
           user_attend.save
       end
     else
-      flash[:error] = "We apologize for the inconvinience either event was canceled or you were never invited"
+      flash[:error] = "We apologize for the inconvinience either event was canceled or you were not invited"
       redirect_to @event
     end
   end
@@ -119,7 +115,7 @@ class EventsController < ApplicationController
           user_attend.save
       end
     else
-      flash[:error] = "We apologize for the inconvinience either event was canceled or you were never invited"
+      flash[:error] = "We apologize for the inconvinience either event was canceled or you were not invited"
       redirect_to @event
     end
   end
