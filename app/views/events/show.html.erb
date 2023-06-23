@@ -29,25 +29,24 @@
 <% end %>
 
 <h2>Attendances</h2>
-
-<% if @event.attendances.any? %>
-  <ul>
+<ul>
+<li><%= @event.creator.fullname %></li>
+  <% if @event.attendances.any? %>
     <% @event.attendances.each do |attendance| %>
-    <li><%= @event.creator.fullname %></li>
-      <% if attendance.status != "canceled" || attendance.status != "rejected" %>
+      <% if attendance.status != "canceled" && attendance.status != "rejected" %>
         <li>
           <%= attendance.user.fullname %>
           <% if attendance.invited_user == true %>
             <br>
             <%= attendance.status %>
-            <%= button_to "Cancel Invitation", cancel_invitation_event_path(@event.id), method: :post, data: { user_id: attendance.user.id } %>
+            <%= button_to "Cancel Invitation", cancel_invitation_event_path(@event.id), method: :post, params: { attendance_id: attendance.id }, data: { user_id: attendance.user.id } %>
          <% end %>
        </li>
             <br>
       <% end %>
     <% end %>
-  </ul>
-<% end %>
+  <% end %>
+</ul>
 
 <div style="display: flex; flex-direction: row; gap: 1rem;">
   <%= link_to 'All events', events_path %>

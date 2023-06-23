@@ -8,9 +8,11 @@ class EventsController < ApplicationController
 
   def show
     @event = Event.find(params[:id])
-    invited_ids = @event.attendances.where(invited_user: false).where(status: Attendance.statuses.slice(:rejected, :canceled).values).pluck(:user_id)
-    subquery = User.where.not(id: invited_ids).where.not(id: @event.creator_id)
-    @users = User.where.not(id: invited_ids).where.not(id: @event.creator_id).or(subquery).where.not(id: Attendance.pluck(:user_id))
+    uninvited_ids = @event.attendances.where(invited_user: false).or(@event.attendances.where(status: "rejected")).pluck(:user_id)
+    invited_ids = @event.attendances.where(invited_user: true).pluck(:user_id)
+    
+    subquery = User.where(id: uninvited_ids)
+    @users = User.where.not(id: invited_ids).or(subquery).distinct
     puts '/\/\/\/\/\/'
     puts @users.present?
     puts '/\/\/\/\/\/'
@@ -53,9 +55,13 @@ class EventsController < ApplicationController
   def invite
     event = Event.find(params[:event_id])
     user_ids = params[:user_ids]
-
     user_ids.each do |user_id|
-      Attendance.create(event_id: event.id, user_id: user_id, status: :pending, invited_user: true)
+      attendance = Attendance.where(user_id: user_id, event_id: event.id)
+      if attendance.present?
+        attendance.update(status: :pending, invited_user: true)
+      else
+        Attendance.create(event_id: event.id, user_id: user_id, status: :pending, invited_user: true)
+      end
     end
 
     redirect_to event, notice: 'Invitations sent successfully.'
@@ -63,12 +69,15 @@ class EventsController < ApplicationController
 
   def cancel_invitation
   @event = Event.find(params[:id])
-  attendance = current_user.attendances.find_by(event_id: @event.id)
+  attendance = Attendance.find(params[:attendance_id])
   
     if attendance
       attendance.update(status: :canceled, invited_user: false)
       # Send notification to the invited user here
       redirect_to @event
+    puts '/\/\/\/\/\/'
+    puts @users.present?
+    puts '/\/\/\/\/\/'
       # respond_to do |format|
       #   format.html { redirect_to @event }
       #   format.turbo_stream { render turbo_stream: turbo_stream.replace("invite-button", partial: "invitations/invite_button", locals: { event: @event }) }
