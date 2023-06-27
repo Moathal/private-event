@@ -1,4 +1,6 @@
 class EventsController < ApplicationController
+  include EventsHelper
+
   before_action :authenticate_user!, except: [:index, :show]
 
   def index
@@ -8,10 +10,7 @@ class EventsController < ApplicationController
 
   def show
     @event = Event.find(params[:id])
-    uninvited_ids = @event.attendances.where(invited_user: false).or(@event.attendances.where(status: "rejected")).pluck(:user_id)
-    invited_ids = @event.attendances.where(invited_user: true).pluck(:user_id)
-    subquery = User.where(id: uninvited_ids)
-    @users = User.where.not(id: invited_ids).or(subquery).distinct
+    @users = EventsHelper.get_unattending_users(@event)
   end
 
   def new
@@ -29,23 +28,13 @@ class EventsController < ApplicationController
 
   def attend
     @event = Event.find(params[:id])
-
     if current_user.attended_events.include?(@event) 
-      case @event.status.to_sym
-      when :accepted
-        @event.update(status: :rejected)
-      when :rejected, :pending, :cancelled
-        @event.update(status: :accepted)
-      end
+      @attendance = Attendance.find_by(user_id: current_user.id, event_id: @event.id)
+      @attendance.update(status: :accepted)
     else
-      current_user.attendances.create(event: @event, status: :accepted)
+      current_user.attendances.create(event: @event, status: :accepted, user: current_user)
     end
-    respond_to do |format|
-      format.html { redirect_to @event }
-      format.turbo_stream do
-        render turbo_stream: turbo_stream.update("event_attendances", partial: "events/attendances", locals: { event: @event })
-      end
-    end
+    redirect_to @event 
   end
 
   def invite
@@ -59,25 +48,16 @@ class EventsController < ApplicationController
         Attendance.create(event_id: event.id, user_id: user_id, status: :pending, invited_user: true)
       end
     end
-
     redirect_to event, notice: 'Invitations sent successfully.'
   end
 
   def cancel_invitation
-  @event = Event.find(params[:id])
-  attendance = Attendance.find(params[:attendance_id])
-  
+    @event = Event.find(params[:id])
+    attendance = Attendance.find(params[:attendance_id])
     if attendance
       attendance.update(status: :canceled, invited_user: false)
       # Send notification to the invited user here
       redirect_to @event
-    puts '/\/\/\/\/\/'
-    puts @users.present?
-    puts '/\/\/\/\/\/'
-      # respond_to do |format|
-      #   format.html { redirect_to @event }
-      #   format.turbo_stream { render turbo_stream: turbo_stream.replace("invite-button", partial: "invitations/invite_button", locals: { event: @event }) }
-      # end
     else
       flash[:error] = "Invitation has already been canceled."
       redirect_to @event
