@@ -21,6 +21,7 @@
       <%= link_to "Sign_in", new_user_session_path, method: :get %>
       <%= link_to "Register", new_user_registration_path, method: :get %>
     <% end %>
+    <%= render partial: 'layouts/notifications' %>
     <%= yield %>
   </body>
 </html>
