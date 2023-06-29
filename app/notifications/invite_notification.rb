@@ -6,7 +6,7 @@
 class InviteNotification < Noticed::Base
   # Add your delivery methods
   #
-  # deliver_by :database
+  deliver_by :database
   # deliver_by :email, mailer: "UserMailer"
   # deliver_by :slack
   # deliver_by :custom, class: "MyDeliveryMethod"
@@ -17,11 +17,13 @@ class InviteNotification < Noticed::Base
 
   # Define helper methods to make rendering easier.
   #
-  # def message
-  #   t(".message")
-  # end
-  #
-  # def url
-  #   post_path(params[:post])
-  # end
+  def message
+    @event = Event.find(params[:attendance][:event_id])
+    @user = User.find(@event.creator_id)
+    "#{@user.fullname} cancelled your invitation to his event"
+  end
+  
+  def url
+    event_path(Event.find(params[:attendance][:event_id]))
+  end
 end

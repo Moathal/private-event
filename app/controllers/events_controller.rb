@@ -1,16 +1,13 @@
 class EventsController < ApplicationController
   include EventsHelper
-
   before_action :authenticate_user!, except: [:index, :show]
-
   def index
     @events = Event.all.where(public: true).or(Event.where(creator: current_user))
-    @user_events = current_user.events.all.where(creator: current_user) if current_user
   end
 
   def show
     @event = Event.find(params[:id])
-    @users = EventsHelper.get_unattending_users(@event)
+    @users = get_unattending_users(@event)
   end
 
   def new
@@ -56,48 +53,31 @@ class EventsController < ApplicationController
     attendance = Attendance.find(params[:attendance_id])
     if attendance
       attendance.update(status: :canceled, invited_user: false)
-      # Send notification to the invited user here
-      redirect_to @event
     else
       flash[:error] = "Invitation has already been canceled."
-      redirect_to @event
     end
+    redirect_to @event
   end
 
   def accept_invite
     @event = Event.find_by(params[:id])
     user_attend = current_user.attendances.find_by(@event.id)
-    if !user_attend.nil?
-      case !user_attend.status.to_sym
-        when :cancelled
-          flash[:error] = "Invitation has been canceled."
-          redirect_to @event
-        when :pending
-          user_attend.update(status: :accepted, invited_user: true)
-          user_attend.save
-      end
+    if user_attend.present?
+      accept_invite_with_attend_record(user_attend)
     else
-      flash[:error] = "We apologize for the inconvinience either event was canceled or you were not invited"
-      redirect_to @event
+      flash[:error] = 'We apologize but we didnt find you in the list.'
     end
   end
 
   def reject_invite
     @event = Event.find_by(params[:id])
     user_attend = current_user.attendances.find_by(@event.id)
-    if !user_attend.nil?
-      case !user_attend.status.to_sym
-        when :cancelled
-          flash[:error] = "Invitation has been canceled."
-          redirect_to @event
-        when :pending
-          user_attend.update(status: :rejected, invited_user: true)
-          user_attend.save
-      end
+    if user_attend.present?
+      reject_invite_with_attend_record(user_attend)
     else
-      flash[:error] = "We apologize for the inconvinience either event was canceled or you were not invited"
-      redirect_to @event
+      flash[:error] = 'We apologize but we didnt find you in the list.'
     end
+    redirect_to @event
   end
 
   def edit
@@ -107,7 +87,7 @@ class EventsController < ApplicationController
   def update
     @event = Event.find(params[:id])
     if @event.update(event_params)
-      redirect_to @event, notice: "Event updated successfully."
+      redirect_to @event, notice: 'Event updated successfully.'
     else
       render :edit
     end
@@ -116,7 +96,7 @@ class EventsController < ApplicationController
   def destroy
     @event = Event.find(params[:id])
     @event.destroy
-    redirect_to events_path, notice: "Event is deleted successfully."
+    redirect_to events_path, notice: 'Event is deleted successfully.'
   end
 
   private

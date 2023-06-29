@@ -36,6 +36,9 @@ gem "responders"
 # A gem that handles registeration & login 
 gem "devise"
 
+gem 'bootstrap', '~> 4.1.1'
+
+gem 'cssbundling-rails'
 
 # Use Redis adapter to run Action Cable in production
 # gem "redis", "~> 4.0"
