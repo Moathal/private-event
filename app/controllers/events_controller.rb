@@ -7,7 +7,9 @@ class EventsController < ApplicationController
 
   def show
     @event = Event.find(params[:id])
-    @users = get_unattending_users(@event)
+    attending_users = @event.attendees.where('status >= ?', 0).or(User.where(id: @event.creator_id))
+    attending_ids = attending_users.pluck(:id)
+    @unattending_users = User.where.not(id: attending_ids)
   end
 
   def new
@@ -25,13 +27,20 @@ class EventsController < ApplicationController
 
   def attend
     @event = Event.find(params[:id])
-    if current_user.attended_events.include?(@event) 
-      @attendance = Attendance.find_by(user_id: current_user.id, event_id: @event.id)
-      @attendance.update(status: :accepted)
+    user_event = current_user.attended_events.where(id: @event.id)
+    if user_event.present?
+      attendance = Attendance.find_by(event_id: @event.id, user_id: current_user.id)
+      if attendance.status != "accepted"
+        attendance.update(status: :accepted)
+      else
+        current_user.attended_events.delete(@event)
+      end
     else
-      current_user.attendances.create(event: @event, status: :accepted, user: current_user)
+      current_user.attended_events << @event
+      attendance = Attendance.find_by(event_id: @event.id, user_id: current_user.id)
+      attendance.update(status: "accepted", invited_user: false)
     end
-    redirect_to @event 
+    redirect_to @event
   end
 
   def invite

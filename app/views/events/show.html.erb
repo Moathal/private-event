@@ -4,7 +4,7 @@
 <h3><%= @event.creator.fullname %></h3>
 
 <% if !current_user.nil? && current_user.id != @event.creator_id %>
-  <% if current_user.attended_events.include?(@event) %>
+  <% if current_user.attended_events.include?(@event) && !@unattending_users.include?(current_user) %>
     <%= button_to "Cancel Attendance", attend_event_path(@event), method: :delete, remote: true %>
   <% else %>
     <%= button_to "Attend", attend_event_path(@event), method: :post, remote: true %>
@@ -12,9 +12,9 @@
 <% elsif current_user && current_user.id == @event.creator.id %>
   <%= button_to "Cancel the event", @event, method: :delete, data: { confirm: "Are you sure you want to cancel this event?!" }, remote: true %>
   <%= link_to 'Edit event', edit_event_path(@event.id) %>
-  <% if @users.present? %>
+  <% if @unattending_users.present? %>
     <%= form_with(url: invite_event_path) do |form| %>
-      <% @users.each do |user| %>
+      <% @unattending_users.each do |user| %>
          <label>
           <%= form.check_box :user_ids, { multiple: true }, user.id, nil %>
           <%= user.fullname %>
