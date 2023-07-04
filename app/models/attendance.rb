@@ -10,7 +10,18 @@ class Attendance < ApplicationRecord
   private
 
   def notify_recipient
-    InviteNotification.with(attendance: self, event: event).deliver_later(user)
+    notified_user = nil 
+    if !saved_change_to_status[0].nil?
+      if saved_change_to_status[1] == "cancel" || saved_change_to_status[1] == "pending"
+        notified_user = user
+      elsif saved_change_to_status[1] == "rejected" || saved_change_to_status[1] == "accepted"
+        notified_user = event.creator
+      end
+      InviteNotification.with(attendance: self, event: event, status: saved_change_to_status[1]).deliver_later(notified_user)
+    else
+      notified_user = event.creator
+      InviteNotification.with(attendance: self, event: event, status: user).deliver_later(notified_user)
+    end
   end
 
   def cleanup_notifications

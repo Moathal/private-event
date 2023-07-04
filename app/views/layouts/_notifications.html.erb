@@ -1,8 +1,9 @@
 <% if current_user %>
   <li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-      <span class="badge rounded-pill bg-danger">
-        <%= @unread.count >= 9 ? "9+" : @unread.count %> <i class="bi bi-suit-heart-fill"></i>
+    <a class="nav-link d-flex gap-2 bg-info dropdown-toggle" style="width:170px;" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <h6 class="text-light">Notifications</h6>
+      <span class="badge rounded-pill bg-warning">
+        <%= @unread.count >= 9 ? "9+" : @unread.count %>
       </span>
     </a>
     <ul class="dropdown-menu dropdown-menu-lg-end" aria-labelledby="navbarDropdown">

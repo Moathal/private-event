@@ -11,6 +11,12 @@ class InviteNotification < Noticed::Base
   # deliver_by :slack
   # deliver_by :custom, class: "MyDeliveryMethod"
 
+  
+  def initialize(status, action, event)
+    @status = status
+    @event = event
+  end
+
   # Add required params
   #
   # param :post
@@ -18,9 +24,20 @@ class InviteNotification < Noticed::Base
   # Define helper methods to make rendering easier.
   #
   def message
-    @event = Event.find(params[:attendance][:event_id])
-    @user = User.find(@event.creator_id)
-    "#{@user.fullname} cancelled your invitation to his event"
+    @creator = @event.creator
+    @user = User.find(params[:attedance][:user_id])
+    case @status
+      when "canceled"
+        "#{@creator.fullname} cancelled your invitation to his event"
+      when "pending"
+        "#{@creator.fullname} invited you to his event"
+      when "accepted"
+        "#{@user.fullname} accepted your invite"
+      when "rejected"
+        "#{@user.fullname} rejected your invite"
+      else
+        "#{@status.fullname} is attending your event"
+    end
   end
   
   def url
