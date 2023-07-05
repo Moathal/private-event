@@ -12,31 +12,34 @@ class InviteNotification < Noticed::Base
   # deliver_by :custom, class: "MyDeliveryMethod"
 
   
-  def initialize(status, action, event)
-    @status = status
-    @event = event
-  end
+  # def initialize(params)
+  #   super
+  #   @params = params
+  # end
 
   # Add required params
   #
-  # param :post
+    param :event
 
   # Define helper methods to make rendering easier.
   #
   def message
+    @event = Event.find(params[:attendance][:event_id])
     @creator = @event.creator
-    @user = User.find(params[:attedance][:user_id])
+    @status = params[:attendance][:status]
+    @user = User.find(params[:attendance][:user_id])
+    puts "STATUS PASSED TO NOTIFICATION MESSAGE #{@status}"
     case @status
-      when "canceled"
+      when 'canceled'
         "#{@creator.fullname} cancelled your invitation to his event"
-      when "pending"
+      when 'pending'
         "#{@creator.fullname} invited you to his event"
-      when "accepted"
+      when 'accepted'
         "#{@user.fullname} accepted your invite"
-      when "rejected"
+      when 'rejected'
         "#{@user.fullname} rejected your invite"
       else
-        "#{@status.fullname} is attending your event"
+        "#{@user.fullname} is attending your event"
     end
   end
   

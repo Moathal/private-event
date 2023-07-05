@@ -10,6 +10,8 @@ class EventsController < ApplicationController
     attending_users = @event.attendees.where('status >= ?', 0).or(User.where(id: @event.creator_id))
     attending_ids = attending_users.pluck(:id)
     @unattending_users = User.where.not(id: attending_ids)
+    @attend = current_user.attendances.find_by(event_id: @event.id)
+    puts "Attend value from show sontroller of event #{@attend}"
   end
 
   def new
@@ -30,15 +32,14 @@ class EventsController < ApplicationController
     user_event = current_user.attended_events.where(id: @event.id)
     if user_event.present?
       attendance = Attendance.find_by(event_id: @event.id, user_id: current_user.id)
-      if attendance.status != "accepted"
-        attendance.update(status: :accepted)
+      if attendance.status != 'accepted'
+        attendance.update(status: 'accepted')
       else
         current_user.attended_events.delete(@event)
       end
     else
-      current_user.attended_events << @event
-      attendance = Attendance.find_by(event_id: @event.id, user_id: current_user.id)
-      attendance.update(status: "accepted", invited_user: false)
+      attendance = Attendance.new(event_id: @event.id, user_id: current_user.id, status: :accepted)
+      attendance.update(invited_user: false, event: @event)
     end
     redirect_to @event
   end
@@ -69,8 +70,8 @@ class EventsController < ApplicationController
   end
 
   def accept_invite
-    @event = Event.find_by(params[:id])
-    user_attend = current_user.attendances.find_by(@event.id)
+    @event = Event.find(params[:id])
+    user_attend = current_user.attendances.find_by(event_id: @event.id)
     if user_attend.present?
       accept_invite_with_attend_record(user_attend)
     else
@@ -79,8 +80,8 @@ class EventsController < ApplicationController
   end
 
   def reject_invite
-    @event = Event.find_by(params[:id])
-    user_attend = current_user.attendances.find_by(@event.id)
+    @event = Event.find(params[:id])
+    user_attend = current_user.attendances.find_by(event_id: @event.id)
     if user_attend.present?
       reject_invite_with_attend_record(user_attend)
     else

@@ -4,7 +4,8 @@
 <h3><%= @event.creator.fullname %></h3>
 
 <% if !current_user.nil? && current_user.id != @event.creator_id %>
-  <% if current_user.attended_events.include?(@event) && !@unattending_users.include?(current_user) %>
+  <%= puts "IF ATTENDANCE STATUS FROM SHOW PAGE NOT EQUAL PENDING >> #{@attend.status}"%>
+  <% if !@unattending_users.include?(current_user) || !@attend.status == 'pending' %>
     <%= button_to "Cancel Attendance", attend_event_path(@event), method: :delete, remote: true %>
   <% else %>
     <%= button_to "Attend", attend_event_path(@event), method: :post, remote: true %>
@@ -39,7 +40,16 @@
           <% if attendance.invited_user == true %>
             <br>
             <%= attendance.status %>
-            <%= button_to "Cancel Invitation", cancel_invitation_event_path(@event.id), method: :post, params: { attendance_id: attendance.id }, data: { user_id: attendance.user.id } %>
+            <% if current_user %>
+              <% if current_user == @event.creator %>
+                <%= button_to "Cancel Invitation", cancel_invitation_event_path(@event.id), method: :post, params: { attendance_id: attendance.id }, data: { user_id: attendance.user.id } %>
+              <% else %>
+              <div class="card">
+                <%= button_to "Accept Invitation", accept_invite_event_path(@event.id), method: :post, params: { attendance_id: attendance.id }, data: { user_id: attendance.user.id } %>
+                <%= button_to "reject Invitation", reject_invite_event_path(@event.id), method: :post, params: { attendance_id: attendance.id }, data: { user_id: attendance.user.id } %>
+              </div>
+              <% end %>
+            <% end %>
          <% end %>
        </li>
             <br>
