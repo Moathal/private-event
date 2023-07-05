@@ -7,7 +7,8 @@ class EventsController < ApplicationController
 
   def show
     @event = Event.find(params[:id])
-    attending_users = @event.attendees.where('status >= ?', 0).or(User.where(id: @event.creator_id))
+    attending_users = @event.attendees.where('status >= ?', 0) + [@event.creator]
+    attending_users.each {|user| puts "ATTENDEE>>>>>>>>>> #{user.fullname}"}
     attending_ids = attending_users.pluck(:id)
     @unattending_users = User.where.not(id: attending_ids)
     @attend = current_user.attendances.find_by(event_id: @event.id)

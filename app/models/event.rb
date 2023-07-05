@@ -4,7 +4,7 @@ class Event < ApplicationRecord
   has_many :attendees, through: :attendances, source: :user
   
   has_noticed_notifications model_name: 'Notification'
-  has_many :notifications, through: :user, dependent: :destroy
+  has_many :notifications, through: :attendance
 
   scope :past_attending_events , -> { where("date < ?", Date.today) }
   scope :future_attending_events, -> { where("date >= ?", Date.today) }

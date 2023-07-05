@@ -6,13 +6,12 @@ class Attendance < ApplicationRecord
   after_update :notify_recipient
   after_create :notify_recipient
   before_destroy :cleanup_notifications
-  has_noticed_notifications model_name: 'Notification'
-  # has_many :notifications, dependent: :destroy
+  has_noticed_notifications model_name: 'Notification', dependent: :destroy
 
   private
 
   def notify_recipient
-    notification = InviteNotification.with(attendance: self, event:, status: saved_change_to_status[1])
+    notification = InviteNotification.with(attendance: self, event: event, status: saved_change_to_status[1])
     case saved_change_to_status[1]
     when 'canceled', 'pending'
       notification.deliver_later(user)
