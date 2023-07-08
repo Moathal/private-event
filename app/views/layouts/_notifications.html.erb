@@ -20,7 +20,7 @@
         </li>
       <% end %>
       <% @read.each do |notification| %>
-        <%= render 'layouts/notification', notification: notification %>
+        <%= render 'layouts/notification', notification: notification, attendance: @attendance %>
       <% end %>
     </ul>
   </li>

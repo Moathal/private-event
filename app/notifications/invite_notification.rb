@@ -24,26 +24,34 @@ class InviteNotification < Noticed::Base
   # Define helper methods to make rendering easier.
   #
   def message
-    @event = Event.find(params[:attendance][:event_id])
-    @creator = @event.creator
-    @status = params[:attendance][:status]
-    @user = User.find(params[:attendance][:user_id])
+    puts "<><><><><><>><>><><><><><><><><><><><><><><><><><><><><><><><><THE MESSAGE METHOD IS WORKING><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><><>"
+    @event = params[:event]
+    @creator = params[:creator]
+    @status = params[:status]
+    @attend_id = params[:attend_id]
+    @user = params[:user]
+    puts "ATTENDANCE PASSED TO NOTIFICATION MESSAGE #{@attendance}"
+    puts "USER PASSED TO NOTIFICATION MESSAGE #{@user}"
+    puts "EVENT PASSED TO NOTIFICATION MESSAGE #{@event}"
+    puts "CREATOR PASSED TO NOTIFICATION MESSAGE #{@creator}"
     puts "STATUS PASSED TO NOTIFICATION MESSAGE #{@status}"
     case @status
-      when 'canceled'
-        "#{@creator.fullname} cancelled your invitation to his event"
-      when 'pending'
-        "#{@creator.fullname} invited you to his event"
-      when 'accepted'
-        "#{@user.fullname} accepted your invite"
-      when 'rejected'
-        "#{@user.fullname} rejected your invite"
-      else
-        "#{@user.fullname} is attending your event"
+    when 'canceled'
+      "#{@creator.fullname} cancelled your invitation to his event"
+    when 'pending'
+      "#{@creator.fullname} invited you to his event"
+    when 'accepted'
+      "#{@user.fullname} accepted your invite"
+    when 'rejected'
+      "#{@user.fullname} rejected your invite"
+    when 'cancel_attend'
+      "#{@user.fullname} is not attending your event"
+    else
+      "#{@user.fullname} is attending your event"
     end
   end
   
   def url
-    event_path(Event.find(params[:attendance][:event_id]))
+    event_path(params[:event])
   end
 end
