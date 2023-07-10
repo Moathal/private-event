@@ -6,15 +6,15 @@ class EventsController < ApplicationController
   end
 
   def show
-    @event = Event.find(params[:id])
-    attending_users = @event.attendees.where('status >= ?', 0) + [@event.creator]
-    attending_users.each {|user| puts "ATTENDEE>>>>>>>>>> #{user.fullname}"}
-    attending_ids = attending_users.pluck(:id)
-    @unattending_users = User.where.not(id: attending_ids)
-    @unattending_users.each {|user| puts "NOT ATTENDEE>>>>>>>>>> #{user.fullname}"}
-    puts "CURRENT USER IS ATTENDING? #{!@unattending_users.include?(current_user)}"
-    @attend = current_user.attendances.find_by(event_id: @event.id)
-    puts "IF ATTENDANCE RECORD IS THERE IS IT PENDING IF ITS NOT THERE RETURN FALSE >>>> #{@attend.present? ? !['pending', 'canceled'].include?(@attend.status) : false}"
+    @event = Event.find_by(id: params[:id])
+    if @event.nil?
+      redirect_to(events_path, notice: 'Event is removed by its creator!!')
+    else
+      attending_users = @event.attendees.where('status >= ?', 0) + [@event.creator]
+      attending_ids = attending_users.pluck(:id)
+      @unattending_users = User.where.not(id: attending_ids)
+      @attend = current_user.attendances.find_by(event_id: @event.id)
+    end
   end
 
   def new
@@ -31,7 +31,7 @@ class EventsController < ApplicationController
   end
 
   def attend
-    @event = Event.find(params[:id])
+    @event = Event.find_byfind_by(id: params[:id])
     user_event = current_user.attended_events.where(id: @event.id)
     attendance = nil
     if user_event.present?
@@ -69,7 +69,7 @@ class EventsController < ApplicationController
 
   def cancel_invitation
     event = Event.find(params[:id])
-    attendance = Attendance.find(params[:attendance_id])
+    attendance = Attendance.find_by(id: params[:attendance_id])
     if attendance
       attendance.update(status: :canceled, invited_user: false)
       Attendance.notify_recipient(attendance.id, attendance.status, event, event.creator, attendance.user)
@@ -108,7 +108,7 @@ class EventsController < ApplicationController
   end
 
   def update
-    @event = Event.find(params[:id])
+    @event = Event.find_by(id: params[:id])
     if @event.update(event_params)
       redirect_to @event, notice: 'Event updated successfully.'
     else
