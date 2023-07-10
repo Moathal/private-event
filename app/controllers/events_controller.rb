@@ -1,6 +1,6 @@
 class EventsController < ApplicationController
   include EventsHelper
-  before_action :authenticate_user!, except: [:index, :show]
+  before_action :authenticate_user!, except: [:index]
   def index
     @events = Event.all.where(public: true).or(Event.where(creator: current_user))
   end
@@ -11,8 +11,10 @@ class EventsController < ApplicationController
     attending_users.each {|user| puts "ATTENDEE>>>>>>>>>> #{user.fullname}"}
     attending_ids = attending_users.pluck(:id)
     @unattending_users = User.where.not(id: attending_ids)
+    @unattending_users.each {|user| puts "NOT ATTENDEE>>>>>>>>>> #{user.fullname}"}
+    puts "CURRENT USER IS ATTENDING? #{!@unattending_users.include?(current_user)}"
     @attend = current_user.attendances.find_by(event_id: @event.id)
-    puts "Attend value from show sontroller of event #{@attend}"
+    puts "IF ATTENDANCE RECORD IS THERE IS IT PENDING IF ITS NOT THERE RETURN FALSE >>>> #{@attend.present? ? !['pending', 'canceled'].include?(@attend.status) : false}"
   end
 
   def new
@@ -57,46 +59,48 @@ class EventsController < ApplicationController
       if attendance.present?
         attendance.update(status: :pending, invited_user: true)
       else
-       attendance = Attendance.create(event_id: event.id, user_id: user_id, status: :pending, invited_user: true)
+       attendance = Attendance.new(event_id: event.id, user_id: user_id, status: :pending, invited_user: true)
+       attendance.save
       end
-      Attendance.notify_recipient(attendance.id, attendance.status, @event, @event.creator, current_user)
+      Attendance.notify_recipient(attendance.id, attendance.status, event, event.creator, attendance.user)
     end
     redirect_to event, notice: 'Invitations sent successfully.'
   end
 
   def cancel_invitation
-    @event = Event.find(params[:id])
+    event = Event.find(params[:id])
     attendance = Attendance.find(params[:attendance_id])
     if attendance
       attendance.update(status: :canceled, invited_user: false)
-      Attendance.notify_recipient(attendance.id, attendance.status, @event, @event.creator, current_user)
+      Attendance.notify_recipient(attendance.id, attendance.status, event, event.creator, attendance.user)
     else
       flash[:error] = "Invitation has already been canceled."
     end
-    redirect_to @event
+    redirect_to event
   end
 
   def accept_invite
-    @event = Event.find(params[:id])
-    user_attend = current_user.attendances.find_by(event_id: @event.id)
+    event = Event.find(params[:id])
+    user_attend = current_user.attendances.find_by(event_id: event.id)
     if user_attend.present?
       accept_invite_with_attend_record(user_attend)
-      user_attend.notify_recipient(user_attend.id, user_attend.status, @event, @event.creator, current_user)
+      Attendance.notify_recipient(user_attend.id, user_attend.status, event, event.creator, current_user)
     else
       flash[:error] = 'We apologize but we didnt find you in the list.'
     end
+    redirect_to event
   end
 
   def reject_invite
-    @event = Event.find(params[:id])
-    user_attend = current_user.attendances.find_by(event_id: @event.id)
+    event = Event.find(params[:id])
+    user_attend = current_user.attendances.find_by(event_id: event.id)
     if user_attend.present?
       reject_invite_with_attend_record(user_attend)
-      user_attend.notify_recipient(user_attend.id, user_attend.status, @event, @event.creator, current_user)
+      Attendance.notify_recipient(user_attend.id, user_attend.status, event, event.creator, current_user)
     else
       flash[:error] = 'We apologize but we didnt find you in the list.'
     end
-    redirect_to @event
+    redirect_to event
   end
 
   def edit

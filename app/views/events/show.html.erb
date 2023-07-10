@@ -4,7 +4,7 @@
 <h3><%= @event.creator.fullname %></h3>
 
 <% if !current_user.nil? && current_user.id != @event.creator_id %>
-  <% if !@unattending_users.include?(current_user) || @attend.present? ? @attend.status != 'pending' : false %>
+  <% if !@unattending_users.include?(current_user) || @attend.present? ? !['pending', 'canceled'].include?(@attend.status) : false %>
     <%= button_to "Cancel Attendance", attend_event_path(@event), method: :delete, remote: true %>
   <% else %>
     <%= button_to "Attend", attend_event_path(@event), method: :post, remote: true %>
