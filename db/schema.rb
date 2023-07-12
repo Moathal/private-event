@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_06_26_171154) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_11_152332) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -33,6 +33,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_06_26_171154) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "public", default: true
+    t.string "name"
     t.index ["creator_id"], name: "index_events_on_creator_id"
   end
 

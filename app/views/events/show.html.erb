@@ -1,7 +1,8 @@
 <h1>The Event</h1>
-<h3><%= @event.location %></h3>
-<h3><%= @event.date %></h3>
-<h3><%= @event.creator.fullname %></h3>
+<h2><%= @event.name %></h2>
+<h3> in <%= @event.location %></h3>
+<h3> AT <%= @event.date %></h3>
+<h3> by <%= @event.creator.fullname %></h3>
 
 <% if !current_user.nil? && current_user.id != @event.creator_id %>
   <% if !@unattending_users.include?(current_user) || @attend.present? ? !['pending', 'canceled'].include?(@attend.status) : false %>

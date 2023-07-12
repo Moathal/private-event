@@ -46,7 +46,7 @@ class EventsController < ApplicationController
     else
       attendance = Attendance.new(event_id: @event.id, user_id: current_user.id, status: :accepted, invited_user: false, event: @event)
       attendance.save
-      Attendance.notify_recipient(attendance.id, 'attend', @event, @event.creator, current_user)
+      Attendance.notify_recipient('attend', @event, @event.creator, current_user)
     end
     redirect_to @event
   end
@@ -59,10 +59,9 @@ class EventsController < ApplicationController
       if attendance.present?
         attendance.update(status: :pending, invited_user: true)
       else
-       attendance = Attendance.new(event_id: event.id, user_id: user_id, status: :pending, invited_user: true)
-       attendance.save
+       attendance = Attendance.create!(event_id: event.id, user_id: user_id, status: :pending, invited_user: true)
       end
-      Attendance.notify_recipient(attendance.id, attendance.status, event, event.creator, attendance.user)
+      Attendance.notify_recipient(attendance.status, event, event.creator, attendance.user)
     end
     redirect_to event, notice: 'Invitations sent successfully.'
   end
@@ -72,7 +71,7 @@ class EventsController < ApplicationController
     attendance = Attendance.find_by(id: params[:attendance_id])
     if attendance
       attendance.update(status: :canceled, invited_user: false)
-      Attendance.notify_recipient(attendance.id, attendance.status, event, event.creator, attendance.user)
+      Attendance.notify_recipient(attendance.status, event, event.creator, attendance.user)
     else
       flash[:error] = "Invitation has already been canceled."
     end
@@ -84,7 +83,7 @@ class EventsController < ApplicationController
     user_attend = current_user.attendances.find_by(event_id: event.id)
     if user_attend.present?
       accept_invite_with_attend_record(user_attend)
-      Attendance.notify_recipient(user_attend.id, user_attend.status, event, event.creator, current_user)
+      Attendance.notify_recipient(user_attend.status, event, event.creator, current_user)
     else
       flash[:error] = 'We apologize but we didnt find you in the list.'
     end
@@ -96,7 +95,7 @@ class EventsController < ApplicationController
     user_attend = current_user.attendances.find_by(event_id: event.id)
     if user_attend.present?
       reject_invite_with_attend_record(user_attend)
-      Attendance.notify_recipient(user_attend.id, user_attend.status, event, event.creator, current_user)
+      Attendance.notify_recipient(user_attend.status, event, event.creator, current_user)
     else
       flash[:error] = 'We apologize but we didnt find you in the list.'
     end
@@ -118,6 +117,8 @@ class EventsController < ApplicationController
 
   def destroy
     @event = Event.find(params[:id])
+    event_id = @event.id
+    update_notifications_for_deleted_event(event_id)
     @event.destroy
     redirect_to events_path, notice: 'Event is deleted successfully.'
   end
@@ -125,6 +126,6 @@ class EventsController < ApplicationController
   private
 
   def event_params
-    params.require(:event).permit(:location, :date, :public)
+    params.require(:event).permit(:name, :location, :date, :public)
   end
 end
