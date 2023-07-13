@@ -1,12 +1,12 @@
 class Notification < ApplicationRecord
   include Noticed::Model
   belongs_to :recipient, polymorphic: true
-  before_destroy :prevent_deletion
+  # before_destroy :prevent_deletion
 
-  private
+  # private
 
-  def prevent_deletion
-    puts "<><><><><><><><><><><><><><><><><> PREVENT DELETION CALL <><><><><><><><><><><><><><><>"
-    throw(:abort)
-  end
+  # def prevent_deletion
+  #   puts "<><><><><><><><><><><><><><><><><> PREVENT DELETION CALL <><><><><><><><><><><><><><><>"
+  #   throw(:abort)
+  # end
 end

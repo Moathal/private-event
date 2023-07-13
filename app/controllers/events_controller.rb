@@ -55,7 +55,7 @@ class EventsController < ApplicationController
     event = Event.find(params[:event_id])
     user_ids = params[:user_ids]
     user_ids.each do |user_id|
-      attendance = Attendance.where(user_id: user_id, event_id: event.id)
+      attendance = Attendance.find_by(user_id: user_id, event_id: event.id)
       if attendance.present?
         attendance.update(status: :pending, invited_user: true)
       else
@@ -102,23 +102,25 @@ class EventsController < ApplicationController
     redirect_to event
   end
 
+  # Event edit view
   def edit
     @event = Event.find(params[:id])
   end
 
+  # Event edit post
   def update
+    puts '<><><><><><><><><><><><><><><><><><><><><> UPDATE START HERE <><><><><><><><><><><><><><><><><><><><><><><><>'
     @event = Event.find_by(id: params[:id])
     if @event.update(event_params)
       redirect_to @event, notice: 'Event updated successfully.'
     else
       render :edit
     end
+    puts '<><><><><><><><><><><><><><><><><><><><><> UPDATE ENDS HERE <><><><><><><><><><><><><><><><><><><><><><><><>'
   end
 
   def destroy
     @event = Event.find(params[:id])
-    event_id = @event.id
-    update_notifications_for_deleted_event(event_id)
     @event.destroy
     redirect_to events_path, notice: 'Event is deleted successfully.'
   end

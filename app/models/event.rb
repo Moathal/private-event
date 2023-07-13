@@ -13,17 +13,18 @@ class Event < ApplicationRecord
   validates :location, presence: true
   validates :date, presence: true
 
-  before_destroy ->(event) { event.notify_recipients(self, 'destroy', creator, event.attendees_for_sure, name) }
+  # The call for the method that triggers event_notification
+  after_update ->(event) { event.notify_recipients(self, 'update', creator, event.attendees_for_sure, name) }
   after_create ->(event) { event.notify_recipients(self, 'create', creator, User.where.not(id: event.creator_id), name) }
 
+  # The method that triggers event_notification  
   def notify_recipients(event, action, creator, recipients, event_name)
     EventNotification.with(event: event, action: action, creator: creator, event_name: event_name).deliver_later(recipients)
   end
 
+  # Returns actual attendees or potential attendees(have 'pending' status in their attendance record).
   def attendees_for_sure
     statuses = %w[accepted pending]
     attendees.where(attendances: { status: statuses })
   end
-
-  
 end

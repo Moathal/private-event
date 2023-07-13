@@ -1,22 +1,19 @@
-# To deliver this notification:
-#
-# EventNotification.with(post: @post).deliver_later(current_user)
-# EventNotification.with(post: @post).deliver(current_user)
+#  This class is to deliver Event notification
+ # - Triggered by Event model.
+ # - It deals with event create and update
+
+## The call for this class methods happens in _notification.html.erb.
+
 
 class EventNotification < Noticed::Base
   # Add your delivery methods
   #
   deliver_by :database
-  # deliver_by :email, mailer: "UserMailer"
-  # deliver_by :slack
-  # deliver_by :custom, class: "MyDeliveryMethod"
 
-  # Add required params
-  #
+  # The param passed to URL method
   param :event
 
-  # Define helper methods to make rendering easier.
-  #
+  # The notification message deliverd to user
   def message
     creator = params[:creator]
     action = params[:action]
@@ -24,10 +21,11 @@ class EventNotification < Noticed::Base
     if action == 'create'
       "#{creator.fullname} added new event"
     else 
-      "The event #{event.name} has been cancelled!!"
+      "The event #{event.name} has been updated!!"
     end
   end
-  #
+
+  # The link for the event when notification is clicked
   def url
     events_path(params[:event])
   end

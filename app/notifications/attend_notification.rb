@@ -1,29 +1,19 @@
-# To deliver this notification:
+#  This class is to deliver Attendance notification
+ # - Triggered by Attendance model.
+ # - It deals with event invitations and attendances
+
+## The call for this class methods happens in _notification.html.erb.
 #
-# InviteNotification.with(post: @post).deliver_later(current_user)
-# InviteNotification.with(post: @post).deliver(current_user)
 
 class AttendNotification < Noticed::Base
-  # Add your delivery methods
-  #
+  # delivery methods
   deliver_by :database
-  # deliver_by :email, mailer: "UserMailer"
-  # deliver_by :slack
-  # deliver_by :custom, class: "MyDeliveryMethod"
 
-  
-  # def initialize(params)
-  #   super
-  #   @params = params
-  # end
-
-  # Add required params
-  #
+  # The param passed to URL method
   param :event
 
-  # The message deliverd to user
+  # The notification message deliverd to user
   def message
-    @event = params[:event]
     creator = params[:creator]
     status = params[:status]
     user = params[:user]
@@ -35,7 +25,9 @@ class AttendNotification < Noticed::Base
     end
   end
 
-  # Define helper methods to make rendering easier.
+  ## Helper methods ##
+
+  # Speceify notifications messages that are sent to event attendees
   def message_decider_for_action_of_attendee(status, event_attendee)
     case status
     when 'accepted'
@@ -49,6 +41,7 @@ class AttendNotification < Noticed::Base
     end
   end
 
+  # Speceify notifications messages that are sent to event creator
   def message_decider_for_action_of_event_creator(status, creator)
     if status == 'canceled'
       "#{creator.fullname} cancelled your invitation to his event"
@@ -57,12 +50,8 @@ class AttendNotification < Noticed::Base
     end
   end
 
-  # The link provided
+  # The link for the event when notification is clicked
   def url
-    if params[:event] != 'deleted'
-      event_path(params[:event])
-    else 
-      events_path
-    end
+    event_path(params[:event])
   end
 end
