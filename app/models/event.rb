@@ -13,7 +13,7 @@ class Event < ApplicationRecord
   validates :location, presence: true
   validates :date, presence: true
 
-  # The call for the method that triggers event_notification
+  # Callbacks to trigger the `notify_recipients` method after update and create
   after_update ->(event) { event.notify_recipients(self, 'update', creator, event.attendees_for_sure, name) }
   after_create ->(event) { event.notify_recipients(self, 'create', creator, User.where.not(id: event.creator_id), name) }
 

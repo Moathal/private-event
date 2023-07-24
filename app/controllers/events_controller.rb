@@ -31,16 +31,16 @@ class EventsController < ApplicationController
   end
 
   def attend
-    @event = Event.find_byfind_by(id: params[:id])
+    @event = Event.find_by(id: params[:id])
     user_event = current_user.attended_events.where(id: @event.id)
     attendance = nil
     if user_event.present?
       attendance = Attendance.find_by(event_id: @event.id, user_id: current_user.id)
       if attendance.status != 'accepted'
         attendance.update(status: 'accepted')
-        Attendance.notify_recipient('None', 'cancel_attend', @event, @event.creator, current_user)
+        Attendance.notify_recipient('attend', @event, @event.creator, current_user)
       else
-        Attendance.notify_recipient('None', 'cancel_attend', @event, @event.creator, current_user)
+        Attendance.notify_recipient('cancel_attend', @event, @event.creator, current_user)
         current_user.attended_events.delete(@event)
       end
     else
