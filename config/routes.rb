@@ -7,6 +7,10 @@ Rails.application.routes.draw do
     member do
       post 'attend'
       delete 'attend' => 'events#attend'
+      post 'invite'
+      post 'cancel_invitation' => 'events#cancel_invitation'
+      post 'accept_invite' => 'events#accept_invite'
+      post 'reject_invite' => 'events#reject_invite'
     end
   end
   

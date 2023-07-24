@@ -4,24 +4,32 @@
 
 <h2>Events created</h2>
 <% @user.events.each do | event | %>
-  <h4><%= event.location %></h4>
-  <small><% event.date %></small>
+  <h4><%= event.name %></h4>
+  <h4> at <%= event.location %></h4>
+  <small> in <% event.date %></small>
 <h4><%= link_to 'See Event', event_path(event.id) %></h4>
 <% end %>
 
 <h2>Events Attending</h2>
 <h3>Comming up Events</h3>
 <% @user.attended_events.future_attending_events.each do | event | %>
-  <h4><%= event.creator.fullname %></h4>
-  <h4><%= event.location %></h4>
-  <small><% event.date %></small>
+  <h4><%= event.name %></h4>
+  <h4> by <%= event.creator.fullname %></h4>
+  <h4> in  <%= event.location %></h4>
+  <small> at <% event.date %></small>
   <h4><%= link_to 'See Event', event_path(event.id) %></h4>
 <% end %>
 
 <h3>Past Events</h3>
 <% @user.attended_events.past_attending_events.each do | event | %>
-  <h4><%= event.creator.fullname %></h4>  
-  <h4><%= event.location %></h4>
-  <small><% event.date %></small>
+  <h4><%= event.name %></h4>
+  <h4> by <%= event.creator.fullname %></h4>  
+  <h4> in <%= event.location %></h4>
+  <small> at <% event.date %></small>
   <h4><%= link_to 'See Event', event_path(event.id) %></h4>
 <% end %>
+
+<div style="display: flex; flex-direction: row; gap: 1rem;">
+  <%= link_to 'All events', events_path %>
+  <%= link_to 'All users', users_path %>
+</div>

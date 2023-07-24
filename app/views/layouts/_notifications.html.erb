@@ -1,0 +1,22 @@
+<% if current_user%>
+  <li class="nav-item dropdown">
+    <a class="nav-link d-flex gap-2 bg-info dropdown-toggle" style="width:170px;" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <h6 class="text-light">Notifications</h6>
+      <span class="badge rounded-pill bg-warning">
+        <%= notifications.unread.count >= 9 ? "9+" : notifications.unread.count %> 
+      </span>
+    </a>
+      <ul class="dropdown-menu dropdown-menu-lg-end" aria-labelledby="navbarDropdown">
+      <%= turbo_stream_from "notification", :notification %>
+        <% if notifications.read.count > 0 || notifications.unread.count > 0 %>
+        <% notifications.each do |notification| %>
+          <%= render 'layouts/notification', notification: notification %>
+        <% end %>
+        <% else %>
+          <li class="dropdown-item">
+            No notifications yet.
+          </li>
+        <% end %>
+      </ul>
+  </li>
+<% end %>
