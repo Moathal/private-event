@@ -7,11 +7,12 @@
       </span>
     </a>
       <ul class="dropdown-menu dropdown-menu-lg-end" aria-labelledby="navbarDropdown">
-      <%= turbo_stream_from "notification", :notification %>
         <% if notifications.read.count > 0 || notifications.unread.count > 0 %>
+ <%= turbo_stream_from "notification"%>
         <% notifications.each do |notification| %>
           <%= render 'layouts/notification', notification: notification %>
         <% end %>
+<% end %>
         <% else %>
           <li class="dropdown-item">
             No notifications yet.
@@ -19,4 +20,3 @@
         <% end %>
       </ul>
   </li>
-<% end %>

@@ -22,6 +22,7 @@
       <%= link_to "Sign_in", new_user_session_path, method: :get %>
       <%= link_to "Register", new_user_registration_path, method: :get %>
     <% end %>
+    <%= turbo_stream_from "notification" %>
       <%= render partial: 'layouts/notifications', locals: { notifications: @notifications }%>
     <%= yield %>
     
