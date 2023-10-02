@@ -1,9 +1,9 @@
-require "application_responder"
+# require "application_responder"
 
 class ApplicationController < ActionController::Base
-  include Turbo::Streams::Broadcasts
-  self.responder = ApplicationResponder
-  respond_to :html
+  # include Turbo::Streams::Broadcasts
+  # self.responder = ApplicationResponder
+  # respond_to :html
   
   include Noticed
 
