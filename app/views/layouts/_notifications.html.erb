@@ -7,6 +7,7 @@
       </span>
     </a>
       <ul class="dropdown-menu dropdown-menu-lg-end" aria-labelledby="navbarDropdown">
+    <%= turbo_frame_tag "notifications" do %>
         <% if notifications.read.count > 0 || notifications.unread.count > 0 %>
         <% notifications.each do |notification| %>
           <%= render 'layouts/notification', notification: notification %>
@@ -17,6 +18,7 @@
             No notifications yet.
           </li>
         <% end %>
+    <% end %>
       </ul>
   </li>
   <% end %>
