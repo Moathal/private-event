@@ -1,25 +1,26 @@
-<h1>Events</h1>
-<% if @events.empty?%>
-  <h3>No events are held</h3>
-<% else %>
-  <% @events.each do | event | %>
+<%= turbo_frame_tag "page_content" do %>
+  <% if @events.empty?%>
+    <h3>No events are held</h3>
+  <% else %>
+    <% @events.each do | event | %>
 
-    <h3><%= event.name %></h3>
-    <h3><%= event.location %></h3>
-    <h3><%= event.date %></h3>
-    <h3><%= event.creator.fullname %></h3>
-    <%= link_to "Show event", event_path(event.id) %>
-    <br>
-    <br>
+      <h3><%= event.name %></h3>
+      <h3><%= event.location %></h3>
+      <h3><%= event.date %></h3>
+      <h3><%= event.creator.fullname %></h3>
+      <%= link_to "Show event", event_path(event.id), data: { turbo_frame: 'page_content' } %>
+      <br>
+      <br>
+    <% end %>
   <% end %>
 <% end %>
+
 <br>
 <div style="display: flex; flex-direction: row; gap: 1rem;">
-  <% if current_user %>
-    <%= link_to 'All My events', user_path(current_user.id) %>
-  <% end %>
-  <%= link_to 'All users', users_path %>
+  <%= link_to 'All My events', user_path(current_user.id), data: { turbo_frame: 'page_content' } %>
+  <%= link_to 'All events', events_path, data: { turbo_frame: 'page_content' } %>
+  <%= link_to 'All users', users_path, data: { turbo_frame: 'page_content' } %>
 </div>
 <br>
 <br>
-<%= link_to 'Add new Event', new_event_path %>
+<%= link_to 'Add new Event', new_event_path, data: { turbo_frame: 'page_content', locals: Event.new } %>

@@ -1,25 +1,27 @@
-<h1>New Event</h1>
-<%= form_for @event do |f| %>
+<%= turbo_frame_tag 'page_content' do %>
+  <h1>New Event</h1>
+  <%= form_for @event do |f| %>
 
-  <div>
-    <%= f.label :name %>
-    <%= f.text_field :name %>
-  </div>
+    <div>
+      <%= f.label :name %>
+      <%= f.text_field :name %>
+    </div>
 
-  <div>
-    <%= f.label :location %>
-    <%= f.text_field :location %>
-  </div>
+    <div>
+      <%= f.label :location %>
+      <%= f.text_field :location %>
+    </div>
 
-  <div>
-   <%= f.label :date %>
-   <%= f.date_field :date %>
-  </div>
+    <div>
+    <%= f.label :date %>
+    <%= f.date_field :date %>
+    </div>
 
-  <div>
-    <%= f.label :public %>
-    <%= f.check_box :public %>
-  </div>
+    <div>
+      <%= f.label :public %>
+      <%= f.check_box :public %>
+    </div>
 
-  <%= f.submit "Submit", disable_with: 'Submiting...' %>
+    <%= f.submit "Submit", disable_with: 'Submiting...' %>
+  <% end %>
 <% end %>

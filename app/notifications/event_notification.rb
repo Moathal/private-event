@@ -27,6 +27,6 @@ class EventNotification < Noticed::Base
 
   # The link for the event when notification is clicked
   def url
-    events_path(params[:event])
+    event_path(params[:event])
   end
 end

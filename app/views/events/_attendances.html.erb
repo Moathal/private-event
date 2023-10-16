@@ -1,0 +1,28 @@
+<h2>Attendances</h2>
+  <ul class="d-flex flex-column justify-content-center align-items-center g-1">
+  <li><%= @event.creator.fullname %></li>
+    <% if @event.attendances.any? %>
+      <% @event.attendances.each do |attendance| %>
+        <% if attendance.status != "canceled" && attendance.status != "rejected" %>
+          <li>
+            <%= attendance.user.fullname %>
+            <% if attendance.invited_user == true %>
+              <% if current_user %>
+                <% if current_user == @event.creator %>
+                  <%= button_to "Cancel Invitation", cancel_invitation_event_path(@event.id), method: :post, params: { attendance_id: attendance.id }, data: { user_id: attendance.user.id } %>
+              <br>
+              <%= attendance.status %>
+                <% elsif attendance.status == 'pending' %>
+                <div class="card">
+                  <%= button_to "Accept Invitation", accept_invite_event_path(@event.id), method: :post, params: { attendance_id: attendance.id }, data: { user_id: attendance.user.id } %>
+                  <%= button_to "reject Invitation", reject_invite_event_path(@event.id), method: :post, params: { attendance_id: attendance.id }, data: { user_id: attendance.user.id } %>
+                </div>
+                <% end %>
+              <% end %>
+          <% end %>
+        </li>
+              <br>
+        <% end %>
+      <% end %>
+    <% end %>
+  </ul>

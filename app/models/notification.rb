@@ -7,7 +7,22 @@ class Notification < ApplicationRecord
      partial: 'layouts/notification',
       locals: {notification: self, current_user: recipient },
       target: 'notifications')
+    broadcast_replace_later_to([self.recipient, "notificationsCount"],
+      partial: 'layouts/count',
+      locals: {count: Notification.where(read_at: nil, recipient: self.recipient).count, current_user: recipient },
+      target: 'count')
   end
-  # after_update_commit {broadcast_replace_to 'notification', target: 'notification', partial: 'layouts/notification', locals: {notification: self, current_user: recipient }}
-  # after_destroy_commit {broadcast_remove_to 'notification', target: 'notification', partial: 'layouts/notification', locals: {notification: self, current_user: recipient }}
+
+  
+  after_update_commit do
+    puts 'The call_back is called'
+    broadcast_replace_later_to([self.recipient, "notifications"],
+     partial: 'layouts/notification',
+      locals: {notification: self, current_user: recipient },
+      target: 'notifications')
+    broadcast_replace_later_to([self.recipient, "notificationsCount"],
+     partial: 'layouts/count',
+      locals: {count: Notification.where(read_at: nil, recipient: self.recipient).count, current_user: recipient },
+      target: 'count')
+  end
 end

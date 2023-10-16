@@ -7,8 +7,8 @@ class Attendance < ApplicationRecord
   has_noticed_notifications model_name: 'Notification'
 
   # The method that triggers attend_notification.
-  def self.notify_recipient(status, event , creator, user)
-    notification = AttendNotification.with(event: event , user: user, creator: creator, status: status)
+  def self.notify_recipient(status, event , creator, user, event_id)
+    notification = AttendNotification.with(event: event , user: user, creator: creator, status: status, event_id: event_id)
     destination_decider(status, notification, creator, user)
   end
 

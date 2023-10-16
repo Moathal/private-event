@@ -4,5 +4,5 @@
 
 import { application } from "./application"
 
-import HelloController from "./hello_controller"
-application.register("hello", HelloController)
+import NavCallsActionController from "./nav_calls_action_controller"
+application.register("nav-calls-action", NavCallsActionController)

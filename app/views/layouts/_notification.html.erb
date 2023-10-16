@@ -1,8 +1,6 @@
- <%# turbo_frame_tag 'notification' do  %>
   <li class="dropdown-item">
-    <%= link_to notification.to_notification.message, notification.to_notification.url, class: "text-decoration-none" %>
+    <%= link_to notification.to_notification.message, notification.to_notification.url, class: "text-decoration-none", data: {turbo_frame: 'page_content'} %>
   <% if notification.unread? %>
       <hr class="dropdown-divider bg-primary">
   <% end %>
   </li>
-<%# end %>
