@@ -3,26 +3,38 @@ class Notification < ApplicationRecord
   belongs_to :recipient, polymorphic: true
 
   after_create_commit do
-    broadcast_prepend_later_to([self.recipient, "notifications"],
-     partial: 'layouts/notification',
-      locals: {notification: self, current_user: recipient },
-      target: 'notifications')
-    broadcast_replace_later_to([self.recipient, "notificationsCount"],
-      partial: 'layouts/count',
-      locals: {count: Notification.where(read_at: nil, recipient: self.recipient).count, current_user: recipient },
-      target: 'count')
+    broadcast_replace_later_to([recipient, 'notifications'],
+                               partial: 'layouts/notifications',
+                               locals: { notifications: returned_notifications(recipient), unread_count: unread(recipient).count, read_count: read(recipient).count },
+                               target: 'notifications')
+    broadcast_replace_later_to([recipient, 'notificationsCount'],
+                               partial: 'layouts/count',
+                               locals: { unread_count: unread(recipient).count },
+                               target: 'count')
   end
 
-  
   after_update_commit do
-    puts 'The call_back is called'
-    broadcast_replace_later_to([self.recipient, "notifications"],
-     partial: 'layouts/notification',
-      locals: {notification: self, current_user: recipient },
-      target: 'notifications')
-    broadcast_replace_later_to([self.recipient, "notificationsCount"],
-     partial: 'layouts/count',
-      locals: {count: Notification.where(read_at: nil, recipient: self.recipient).count, current_user: recipient },
-      target: 'count')
+    broadcast_replace_later_to([recipient, 'notifications'],
+                               partial: 'layouts/notifications',
+                               locals: { notifications: returned_notifications(recipient), unread_count: unread(recipient).count, read_count: read(recipient).count },
+                               target: 'notifications')
+    broadcast_replace_later_to([recipient, 'notificationsCount'],
+                               partial: 'layouts/count',
+                               locals: { unread_count: unread(recipient).count },
+                               target: 'count')
+  end
+
+  def returned_notifications(recipient)
+    notifications_unread = recipient.notifications.where(read_at: nil)
+    notifications_read = recipient.notifications.where.not(read_at: nil)
+    (notifications_unread + notifications_read)[0...9]
+  end
+
+  def unread(recipient)
+    recipient.notifications.where(read_at: nil).reload.to_a
+  end
+
+  def read(recipient)
+    recipient.notifications.where.not(read_at: nil).reload.to_a
   end
 end

@@ -1,4 +1,4 @@
-<% if notifications.read.count > 0 || notifications.unread.count > 0 %>
+<% if read_count > 0 || unread_count > 0 %>
   <% notifications.each do |notification| %>
     <%= render 'layouts/notification', notification: notification %>
   <% end %>

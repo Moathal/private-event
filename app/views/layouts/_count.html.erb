@@ -1,5 +1,5 @@
 <%= turbo_frame_tag "count" do %>
   <span class="badge rounded-pill bg-warning">
-    <%= count >= 9 ? "9+" : count %> 
+    <%= unread_count >= 9 ? "9+" : unread_count %> 
   </span>
 <% end %>

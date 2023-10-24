@@ -7,7 +7,7 @@ class EventsController < ApplicationController
     @events = Event.all.where(public: true).or(Event.where(creator: current_user))
     respond_to do |format|
       format.html
-      format.turbo_stream { render turbo_stream: turbo_stream.replace('page_content', template: 'events/index') }
+      format.turbo_stream { render turbo_stream: turbo_stream.replace('page_content', template: 'events/index')}
     end
   end
 
@@ -20,14 +20,11 @@ class EventsController < ApplicationController
       @unattending_users = User.where.not(id: attending_ids)
       @attend = current_user.attendances.find_by(event_id: @event.id)
     end
-    event_user_notifications = current_user.notifications.where("params->> 'event_id' = ? AND read_at IS NULL", @event.id.to_s)
-    if !event_user_notifications.empty?
-      event_user_notifications.each { |notification| notification.mark_as_read! }
-      puts"<><><><><><><><><><><><><><><>?/|?/#{event_user_notifications.first.params}?/|?/<><><><><><><><><><><><><><><><>"
-    end
+    mark_current_user_event_notifications_as_read
+
     respond_to do |format|
       format.html
-      format.turbo_stream { render turbo_stream: turbo_stream.replace('page_content', template: 'events/show') }
+      format.turbo_stream { render turbo_stream: turbo_stream.replace('page_content', template: 'events/show')}
     end
   end
 
@@ -38,7 +35,10 @@ class EventsController < ApplicationController
   def create
     @event = current_user.events.build(event_params)
     if @event.save
-      redirect_to @event, notice: 'Event was created successfully'
+      respond_to do |format|
+        format.html { redirect_to event_path(@event) }
+        format.turbo_stream { redirect_to event_path(@event, format: :turbo_stream) }
+      end
     else
       render :new
     end
@@ -47,7 +47,7 @@ class EventsController < ApplicationController
   def attend
     user_event = current_user.attended_events.where(id: @event.id)
     attendance = nil
-    if user_event.present?
+    unless !user_event.present?
       attendance = Attendance.find_by(event_id: @event.id, user_id: current_user.id)
       if attendance.status != 'accepted'
         attendance.update(status: 'accepted')
@@ -59,11 +59,11 @@ class EventsController < ApplicationController
     else
       attendance = Attendance.new(event_id: @event.id, user_id: current_user.id, status: :accepted, invited_user: false, event: @event)
       attendance.save
-      Attendance.notify_recipient('attend', @event, @event.creator, current_user)
+      Attendance.notify_recipient('attend', @event, @event.creator, current_user, @event.id)
     end
     respond_to do |format|
-      format.html
-      format.turbo_stream { render turbo_stream: turbo_stream.replace('page_content', template: 'events/show') }
+      format.html { redirect_to event_path(@event) }
+      format.turbo_stream { redirect_to event_path(@event, format: :turbo_stream) }
     end
   end
 
@@ -79,8 +79,8 @@ class EventsController < ApplicationController
       Attendance.notify_recipient(attendance.status, @event, @event.creator, attendance.user, @event.id)
     end
     respond_to do |format|
-      format.html
-      format.turbo_stream{ render turbo_stream: turbo_stream.replace('page_content', template: 'events/show') }
+      format.html { redirect_to event_path(@event) }
+      format.turbo_stream { redirect_to event_path(@event, format: :turbo_stream) }
     end
   end
 
@@ -93,8 +93,8 @@ class EventsController < ApplicationController
       flash[:error] = "Invitation has already been canceled."
     end
     respond_to do |format|
-      format.html
-      format.turbo_stream{ render turbo_stream: turbo_stream.replace('page_content', template: 'events/show') }
+      format.html { redirect_to event_path(@event) }
+      format.turbo_stream { redirect_to event_path(@event, format: :turbo_stream) }
     end
   end
 
@@ -104,11 +104,11 @@ class EventsController < ApplicationController
       accept_invite_with_attend_record(user_attend)
       Attendance.notify_recipient(user_attend.status, @event, @event.creator, current_user, @event.id)
     else
-      flash[:error] = 'We apologize but we didnt find you in the list.'
+      flash[:error] = "We apologize but we didn't find you in the invited list."
     end
     respond_to do |format|
-      format.html
-      format.turbo_stream{ render turbo_stream: turbo_stream.replace('page_content', template: 'events/show') }
+      format.html { redirect_to event_path(@event) }
+      format.turbo_stream { redirect_to event_path(@event, format: :turbo_stream) }
     end
   end
 
@@ -121,8 +121,8 @@ class EventsController < ApplicationController
       flash[:error] = 'We apologize but we didnt find you in the list.'
     end
     respond_to do |format|
-      format.html
-      format.turbo_stream{ render turbo_stream: turbo_stream.replace('page_content', template: 'events/show') }
+      format.html { redirect_to event_path(@event) }
+      format.turbo_stream { redirect_to event_path(@event, format: :turbo_stream) }
     end
   end
 
@@ -133,7 +133,10 @@ class EventsController < ApplicationController
   # Event edit post
   def update
     if @event.update(event_params)
-      redirect_to @event, notice: 'Event updated successfully.'
+    respond_to do |format|
+      format.html { redirect_to event_path(@event) }
+      format.turbo_stream { redirect_to event_path(@event, format: :turbo_stream), notice: 'Event updated successfully.' }
+    end
     else
       render :edit
     end
@@ -141,7 +144,10 @@ class EventsController < ApplicationController
 
   def destroy
     @event.destroy
-    redirect_to events_path, notice: 'Event is deleted successfully.'
+      respond_to do |format|
+      format.html { redirect_to events_path }
+      format.turbo_stream { redirect_to events_path(format: :turbo_stream) }
+    end
   end
 
   private

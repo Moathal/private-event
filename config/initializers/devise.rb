@@ -14,7 +14,7 @@ Devise.setup do |config|
   # confirmation, reset password and unlock tokens in the database.
   # Devise will use the `secret_key_base` as its `secret_key`
   # by default. You can change it below and use your own secret key.
-  # config.secret_key = '51f83bdfee5af07ee2f4aaba90811f17d78ea6501ebea3b57e73a957f4e6ac45467907835817b184b60f6072ac3a64a699d11d897207101f3278b33b6f961f75'
+  # config.secret_key = '1915d8c1775d81264cd0e7035b96ec62884b138b14eb2b46b8d931220a5623b02a4558bd77646ecb514e84c34c526039d7d77f765c71a52bd2d07be967f31236'
 
   # ==> Controller configuration
   # Configure the parent class to the devise controllers.
@@ -126,7 +126,7 @@ Devise.setup do |config|
   config.stretches = Rails.env.test? ? 1 : 12
 
   # Set up a pepper to generate the hashed password.
-  # config.pepper = 'ddcf383618d1228bd6bb9b8575b67f4617428b1516ce88e10278da27a2953e08d204b67e1e714725c1a028d562c1910dc91c04d1b5c1eab3ba80c27e43b3241a'
+  # config.pepper = 'c1b614b29fc0e5b37b4b34630f4eef57fce0bf4a0d5e7115210103a69910cb725fa462804a035be839d7bab431d271c6aaedad61f9f1e2e997b0b72c94c67898'
 
   # Send a notification to the original email when the user's email is changed.
   # config.send_email_changed_notification = false
@@ -299,7 +299,7 @@ Devise.setup do |config|
   # ==> Hotwire/Turbo configuration
   # When using Devise with Hotwire/Turbo, the http status for error responses
   # and some redirects must match the following. The default in Devise for existing
-  # apps is `200 OK` and `302 Found respectively`, but new apps are generated with
+  # apps is `200 OK` and `302 Found` respectively, but new apps are generated with
   # these new defaults that match Hotwire/Turbo behavior.
   # Note: These might become the new default in future versions of Devise.
   config.responder.error_status = :unprocessable_entity
