@@ -1,13 +1,14 @@
 class EventsController < ApplicationController
   include EventsHelper
   before_action :authenticate_user!
-  before_action :set_event, only: %i[edit update show destroy invite cancel_invitation attend reject_invite accept_invite]
-  
+  before_action :set_event,
+                only: %i[edit update show destroy invite cancel_invitation attend reject_invite accept_invite]
+
   def index
     @events = Event.all.where(public: true).or(Event.where(creator: current_user))
     respond_to do |format|
       format.html
-      format.turbo_stream { render turbo_stream: turbo_stream.replace('page_content', template: 'events/index')}
+      format.turbo_stream { render turbo_stream: turbo_stream.replace('page_content', template: 'events/index') }
     end
   end
 
@@ -15,16 +16,14 @@ class EventsController < ApplicationController
     if @event.nil?
       redirect_to events_path, notice: 'Event is removed by its creator!!'
     else
-      attending_users = @event.attendees.where('status >= ?', 0) + [@event.creator]
-      attending_ids = attending_users.pluck(:id)
-      @unattending_users = User.where.not(id: attending_ids)
-      @attend = current_user.attendances.find_by(event_id: @event.id)
+      @unattending_users = unattending_users
+      @attend = attending
     end
     mark_current_user_event_notifications_as_read
 
     respond_to do |format|
       format.html
-      format.turbo_stream { render turbo_stream: turbo_stream.replace('page_content', template: 'events/show')}
+      format.turbo_stream { render turbo_stream: turbo_stream.replace('page_content', template: 'events/show') }
     end
   end
 
@@ -47,8 +46,13 @@ class EventsController < ApplicationController
   def attend
     user_event = current_user.attended_events.where(id: @event.id)
     attendance = nil
-    unless !user_event.present?
-      attendance = Attendance.find_by(event_id: @event.id, user_id: current_user.id)
+    if !user_event.present?
+      attendance = Attendance.new(event_id: @event.id, attendee_id: current_user.id, status: :accepted,
+                                  invited_user: false, event: @event)
+      attendance.save
+      Attendance.notify_recipient('attend', @event, @event.creator, current_user, @event.id)
+    else
+      attendance = Attendance.find_by(event_id: @event.id, attendee_id: current_user.id)
       if attendance.status != 'accepted'
         attendance.update(status: 'accepted')
         Attendance.notify_recipient('attend', @event, @event.creator, current_user, @event.id)
@@ -56,25 +60,24 @@ class EventsController < ApplicationController
         Attendance.notify_recipient('cancel_attend', @event, @event.creator, current_user, @event.id)
         current_user.attended_events.delete(@event)
       end
-    else
-      attendance = Attendance.new(event_id: @event.id, user_id: current_user.id, status: :accepted, invited_user: false, event: @event)
-      attendance.save
-      Attendance.notify_recipient('attend', @event, @event.creator, current_user, @event.id)
     end
-    respond_to do |format|
-      format.html { redirect_to event_path(@event) }
-      format.turbo_stream { redirect_to event_path(@event, format: :turbo_stream) }
-    end
+    # respond_to do |format|
+    #   format.html
+    #   format.turbo_stream do
+    #     render turbo_stream: turbo_stream.replace('attendances', partial: 'events/attendances',
+    #                                                              locals: { event: @event, creator: @event.creator, attendances: @event.attendances, attend: attending, unattending_users: })
+    #   end
+    #  end
   end
 
   def invite
     user_ids = params[:user_ids]
     user_ids.each do |user_id|
-      attendance = Attendance.find_by(user_id: user_id, event_id: @event.id)
+      attendance = Attendance.find_by(user_id:, event_id: @event.id)
       if attendance.present?
         attendance.update(status: :pending, invited_user: true)
       else
-       attendance = Attendance.create!(event_id: @event.id, user_id: user_id, status: :pending, invited_user: true)
+        attendance = Attendance.create!(event_id: @event.id, user_id:, status: :pending, invited_user: true)
       end
       Attendance.notify_recipient(attendance.status, @event, @event.creator, attendance.user, @event.id)
     end
@@ -90,7 +93,7 @@ class EventsController < ApplicationController
       attendance.update(status: :canceled, invited_user: false)
       Attendance.notify_recipient(attendance.status, @event, @event.creator, attendance.user, @event.id)
     else
-      flash[:error] = "Invitation has already been canceled."
+      flash[:error] = 'Invitation has already been canceled.'
     end
     respond_to do |format|
       format.html { redirect_to event_path(@event) }
@@ -127,16 +130,17 @@ class EventsController < ApplicationController
   end
 
   # Event edit view
-  def edit
-  end
+  def edit; end
 
   # Event edit post
   def update
     if @event.update(event_params)
-    respond_to do |format|
-      format.html { redirect_to event_path(@event) }
-      format.turbo_stream { redirect_to event_path(@event, format: :turbo_stream), notice: 'Event updated successfully.' }
-    end
+      respond_to do |format|
+        format.html { redirect_to event_path(@event) }
+        format.turbo_stream do
+          redirect_to event_path(@event, format: :turbo_stream), notice: 'Event updated successfully.'
+        end
+      end
     else
       render :edit
     end
@@ -144,7 +148,7 @@ class EventsController < ApplicationController
 
   def destroy
     @event.destroy
-      respond_to do |format|
+    respond_to do |format|
       format.html { redirect_to events_path }
       format.turbo_stream { redirect_to events_path(format: :turbo_stream) }
     end

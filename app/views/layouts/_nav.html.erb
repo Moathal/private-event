@@ -9,10 +9,8 @@
       </a>
       <%= turbo_stream_from current_user, "notifications" %>
       <ul class="dropdown-menu dropdown-menu-lg-end" aria-labelledby="navbarDropdown">
-        <%= turbo_frame_tag "notifications" do %>
           <%= render partial: 'layouts/notifications', locals: { notifications: @notifications, unread_count: @unread_count, read_count:
 @read_count  }%>
-        <% end %>
       </ul>
     </li>
       <li class="nav-item">

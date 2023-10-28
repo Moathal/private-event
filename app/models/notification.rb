@@ -3,9 +3,9 @@ class Notification < ApplicationRecord
   belongs_to :recipient, polymorphic: true
 
   after_create_commit do
-    broadcast_replace_later_to([recipient, 'notifications'],
-                               partial: 'layouts/notifications',
-                               locals: { notifications: returned_notifications(recipient), unread_count: unread(recipient).count, read_count: read(recipient).count },
+    broadcast_prepend_later_to([recipient, 'notifications'],
+                               partial: 'layouts/notification',
+                               locals: { notification: self },
                                target: 'notifications')
     broadcast_replace_later_to([recipient, 'notificationsCount'],
                                partial: 'layouts/count',
@@ -25,16 +25,16 @@ class Notification < ApplicationRecord
   end
 
   def returned_notifications(recipient)
-    notifications_unread = recipient.notifications.where(read_at: nil)
-    notifications_read = recipient.notifications.where.not(read_at: nil)
+    notifications_unread = recipient.notifications.where(read_at: nil).order(created_at: :desc).reload
+    notifications_read = recipient.notifications.where.not(read_at: nil).order(created_at: :desc).limit(9).reload
     (notifications_unread + notifications_read)[0...9]
   end
 
   def unread(recipient)
-    recipient.notifications.where(read_at: nil).reload.to_a
+    recipient.notifications.where(read_at: nil).reload
   end
 
   def read(recipient)
-    recipient.notifications.where.not(read_at: nil).reload.to_a
+    recipient.notifications.where.not(read_at: nil).limit(5).reload
   end
 end

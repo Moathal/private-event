@@ -1,27 +1,18 @@
-<%= turbo_frame_tag 'page_content' do %>
-  <div class="card d-flex flex-row justify-content-between p-3 m-1"> 
-    <div>
-      <h1><strong><%= @event.name %> </strong> EVENT</h1>
-      <h6> in <%= @event.location %></h6>
-      <h6> AT <%= @event.date %></h6>
-      <h6> by <%= @event.creator.fullname %></h6>
-    </div>
-    <% if current_user.id == @event.creator_id %>
-      <div class="d-flex flex-column gap-1 justify-content-end">
-        <%= link_to 'Edit the event', edit_event_path(@event.id), class: "btn border-rounded bg-success text-light" %>
-        <%= button_to "Cancel the event", @event, method: :delete, data: { confirm: "Are you sure you want to cancel this event?!" }, remote: true, class: "btn border-rounded bg-danger text-light" %>
+  <%= turbo_frame_tag 'page_content' do %>
+    <div class="card d-flex flex-row justify-content-between p-3 m-1"> 
+      <div>
+        <h1><strong><%= @event.name %> </strong> EVENT</h1>
+        <h6> in <%= @event.location %></h6>
+        <h6> AT <%= @event.date %></h6>
+        <h6> by <%= @event.creator.fullname %></h6>
       </div>
-    <% end %>
-  </div> 
-
-  <% if current_user.id != @event.creator_id %>
-   <%= render 'events/attend_button' %>
-  <% else %>
-    <div>
-      <%= render 'events/users_invited_or_to_invite' %>
-    </div>
-  <% end %>
-  <div class="d-flex flex-column justify-content-center align-items-center g-2">
-    <%= render 'events/attendances' %>
-  </div>
+      <% if current_user.id == @event.creator_id %>
+        <div class="d-flex flex-column gap-1 justify-content-end">
+          <%= link_to 'Edit the event', edit_event_path(@event.id), class: "btn border-rounded bg-success text-light" %>
+          <%= button_to "Cancel the event", @event, method: :delete, data: { confirm: "Are you sure you want to cancel this event?!" }, remote: true, class: "btn border-rounded bg-danger text-light" %>
+        </div>
+      <% end %>
+    </div> 
+<%= turbo_stream_from @event, 'attendance' %>
+<%= render 'events/attendances', attendances: @event.attendances, creator: @event.creator, event: @event, unattending_users: @unattending_users, attend: @attend %>
 <% end %>

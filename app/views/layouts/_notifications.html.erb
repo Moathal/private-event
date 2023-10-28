@@ -1,10 +1,12 @@
-<% if read_count > 0 || unread_count > 0 %>
+<%= turbo_frame_tag "notifications" do %>
+  <% if read_count > 0 || unread_count > 0 %>
   <% notifications.each do |notification| %>
     <%= render 'layouts/notification', notification: notification %>
   <% end %>
 
-<% else %>
-  <li class="dropdown-item">
-    No notifications yet.
-  </li>
+  <% else %>
+    <li class="dropdown-item">
+      No notifications yet.
+    </li>
+  <% end %>
 <% end %>

@@ -15,21 +15,23 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_11_152332) do
   enable_extension "plpgsql"
 
   create_table "attendances", force: :cascade do |t|
-    t.bigint "user_id", null: false
+    t.bigint "attendee_id", null: false
+    t.bigint "host_id", null: false
     t.bigint "event_id", null: false
     t.boolean "invited_user"
     t.integer "status"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["event_id", "user_id"], name: "index_attendances_on_event_id_and_user_id", unique: true
+    t.index ["attendee_id"], name: "index_attendances_on_attendee_id"
     t.index ["event_id"], name: "index_attendances_on_event_id"
-    t.index ["user_id"], name: "index_attendances_on_user_id"
+    t.index ["host_id", "attendee_id"], name: "index_attendances_on_host_id_and_attendee_id", unique: true
+    t.index ["host_id"], name: "index_attendances_on_host_id"
   end
 
   create_table "events", force: :cascade do |t|
     t.string "location"
     t.date "date"
-    t.bigint "creator_id"
+    t.bigint "creator_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "public", default: true
@@ -65,6 +67,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_07_11_152332) do
   end
 
   add_foreign_key "attendances", "events"
-  add_foreign_key "attendances", "users"
+  add_foreign_key "attendances", "users", column: "attendee_id"
+  add_foreign_key "attendances", "users", column: "host_id"
   add_foreign_key "events", "users", column: "creator_id"
 end

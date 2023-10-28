@@ -1,7 +1,7 @@
 class Event < ApplicationRecord
   belongs_to :creator, class_name: 'User', foreign_key: 'creator_id'
-  has_many :attendances, dependent: :destroy
-  has_many :attendees, through: :attendances, source: :user
+  has_many :attendances, foreign_key: 'event_id', dependent: :destroy
+  has_many :attendees, through: :attendances
 
   has_noticed_notifications model_name: 'Notification'
   has_many :notifications, through: :attendance
@@ -11,7 +11,7 @@ class Event < ApplicationRecord
 
   validates :name, presence: true
   validates :location, presence: true
-  validates :date, presence: true
+  validates :date, presence: true  
 
   # Callbacks to trigger the `notify_recipients` method after update and create
   after_update ->(event) { event.notify_recipients(self, 'update', creator, event.attendees_for_sure, id) }

@@ -23,4 +23,14 @@ module EventsHelper
 
     notifications.each(&:mark_as_read!)
   end
+
+  def unattending_users
+    attending_users = @event.attendees.where('status >= ?', 0) + [@event.creator]
+    attending_ids = attending_users.pluck(:id)
+    User.where.not(id: attending_ids)
+  end
+
+  def attending
+    current_user.attendances.find_by(event_id: @event.id)
+  end
 end
