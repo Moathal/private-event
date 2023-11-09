@@ -15,7 +15,7 @@
     </li>
       <li class="nav-item">
       <span><%= link_to "Edit profile", edit_user_registration_path, method: :get %></span>
-      <span><%= button_to "sign out", destroy_user_session_path, method: :delete %></span>
+      <span><%= button_to "sign out", destroy_user_session_path, method: :delete, turbo_method: :delete %></span>
     </li>
   <% else %>
     <%= link_to "Sign_in", new_user_session_path, method: :get %>

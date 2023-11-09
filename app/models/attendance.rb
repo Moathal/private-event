@@ -1,3 +1,6 @@
+# frozen_string_literal: true
+
+# This class represents an attendance record for each attendee in an event it notifies host and attendees if any update occurs to it.  
 class Attendance < ApplicationRecord
   belongs_to :event, foreign_key: 'event_id'
   belongs_to :attendee, class_name: 'User', foreign_key: 'attendee_id'
@@ -6,22 +9,26 @@ class Attendance < ApplicationRecord
 
   has_noticed_notifications model_name: 'Notification'
 
-  # before_destroy :cleanup_notifications
+  before_destroy :cleanup_notifications
 
   after_commit do
-    attending_users = event.attendees.where('status >= ?', 0) + [event.creator]
-    attending_ids = attending_users.pluck(:id)
-    unattending_users = User.where.not(id: attending_ids)
-    attending_user = self
+    attendance = destroyed? ? nil : self
+    creator = event.creator
+    attending_users = Attendance.where('status >= ? AND event_id = ? ', 0, event_id) + [creator]
+    attending_ids = attending_users.pluck(:attendee_id, :id)
+    unattending_users = User.where.not(id: attending_ids).to_a
 
-    broadcast_replace_later_to([event, 'attendance'],
-                               partial: 'events/_attendances',
-                               locals: { event:,
-                                         creator: event.creator,
-                                         attendances: attending_user,
-                                         attend: attending,
-                                         unattending_users: },
-                               target: 'attendances')
+    (attending_users + unattending_users).each do |user|
+      broadcast_replace_to([event, "#{user.id}-attendance"],
+                           partial: 'events/attendances',
+                           locals: { event:,
+                                     creator:,
+                                     attendances: attending_users,
+                                     attend: attendance,
+                                     unattending_users:,
+                                     logged_in_user: user },
+                           target: 'attendances')
+    end
   end
 
   # The method that triggers attend_notification.
@@ -40,23 +47,11 @@ class Attendance < ApplicationRecord
       notification.deliver_later(user)
     end
   end
-  
+
   private
 
-  # def attending(user)
-  #   user.attendances.find_by(event_id: event.id)
-  # end
-
-  # Clean notifications of the event that has been deleted
-  # def cleanup_notifications
-  #   notifications_as_attendance.destroy_all
-  # end
-
-  # def unattending_users
-  #   return if event.nil?
-
-  #   attending_users = event.attendees.where('status >= ?', 0) + [event.creator]
-  #   attending_ids = attending_users.pluck(:id)
-  #   User.where.not(id: attending_ids)
-  # end
+  Clean notifications of the event that has been deleted
+  def cleanup_notifications
+    notifications_as_attendance.destroy_all
+  end
 end

@@ -19,12 +19,15 @@ class EventsController < ApplicationController
       @unattending_users = unattending_users
       @attend = attending
     end
+
     mark_current_user_event_notifications_as_read
 
-    respond_to do |format|
-      format.html
-      format.turbo_stream { render turbo_stream: turbo_stream.replace('page_content', template: 'events/show') }
-    end
+    # respond_to do |format|
+    #   format.html
+    #   format.turbo_stream do
+    #     render turbo_stream: turbo_stream.replace('page_content', partial: 'events/show')
+    #   end
+    # end
   end
 
   def new
@@ -44,30 +47,20 @@ class EventsController < ApplicationController
   end
 
   def attend
-    user_event = current_user.attended_events.where(id: @event.id)
-    attendance = nil
-    if !user_event.present?
-      attendance = Attendance.new(event_id: @event.id, attendee_id: current_user.id, status: :accepted,
-                                  invited_user: false, event: @event)
-      attendance.save
-      Attendance.notify_recipient('attend', @event, @event.creator, current_user, @event.id)
-    else
-      attendance = Attendance.find_by(event_id: @event.id, attendee_id: current_user.id)
-      if attendance.status != 'accepted'
-        attendance.update(status: 'accepted')
-        Attendance.notify_recipient('attend', @event, @event.creator, current_user, @event.id)
-      else
-        Attendance.notify_recipient('cancel_attend', @event, @event.creator, current_user, @event.id)
-        current_user.attended_events.delete(@event)
+    attendance_decider
+    
+    respond_to do |format|
+      format.html
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.replace('attendances', partial: 'events/attendances',
+                                                                  locals: { event: @event,
+                                                                          creator: @event.creator,
+                                                                      attendances: @event.attendances,
+                                                                           attend: attending, 
+                                                                unattending_users:,
+                                                                   logged_in_user: current_user})
       end
-    end
-    # respond_to do |format|
-    #   format.html
-    #   format.turbo_stream do
-    #     render turbo_stream: turbo_stream.replace('attendances', partial: 'events/attendances',
-    #                                                              locals: { event: @event, creator: @event.creator, attendances: @event.attendances, attend: attending, unattending_users: })
-    #   end
-    #  end
+     end
   end
 
   def invite

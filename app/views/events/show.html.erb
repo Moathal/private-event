@@ -13,6 +13,6 @@
         </div>
       <% end %>
     </div> 
-<%= turbo_stream_from @event, 'attendance' %>
-<%= render 'events/attendances', attendances: @event.attendances, creator: @event.creator, event: @event, unattending_users: @unattending_users, attend: @attend %>
+<%= turbo_stream_from @event, "#{current_user.id}-attendance" %>
+<%= render 'events/attendances', attendances: @event.attendances, creator: @event.creator, event: @event, unattending_users: @unattending_users, attend: @attend, logged_in_user: current_user %>
 <% end %>

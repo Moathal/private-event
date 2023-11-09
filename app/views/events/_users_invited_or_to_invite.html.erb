@@ -1,5 +1,5 @@
 <% if unattending_users.present? %>
-  <%= form_with(url: invite_event_path, html: { class: "d-flex flex column" }) do |form| %>
+  <%= form_with(url: invite_event_path(event.id), html: { class: "d-flex flex column" }) do |form| %>
     <% unattending_users.each do |user| %>
       <label>
         <%= form.check_box :user_ids, { multiple: true }, user.id, nil %>
