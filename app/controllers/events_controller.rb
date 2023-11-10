@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class EventsController < ApplicationController
   include EventsHelper
   before_action :authenticate_user!
@@ -6,10 +8,10 @@ class EventsController < ApplicationController
 
   def index
     @events = Event.all.where(public: true).or(Event.where(creator: current_user))
-    respond_to do |format|
-      format.html
-      format.turbo_stream { render turbo_stream: turbo_stream.replace('page_content', template: 'events/index') }
-    end
+    # respond_to do |format|
+    #   format.html
+    #   format.turbo_stream { render turbo_stream: turbo_stream.replace('page_content', template: 'events/index') }
+    # end
   end
 
   def show
@@ -21,13 +23,6 @@ class EventsController < ApplicationController
     end
 
     mark_current_user_event_notifications_as_read
-
-    # respond_to do |format|
-    #   format.html
-    #   format.turbo_stream do
-    #     render turbo_stream: turbo_stream.replace('page_content', partial: 'events/show')
-    #   end
-    # end
   end
 
   def new
@@ -48,49 +43,30 @@ class EventsController < ApplicationController
 
   def attend
     attendance_decider
-    
-    respond_to do |format|
-      format.html
-      format.turbo_stream do
-        render turbo_stream: turbo_stream.replace('attendances', partial: 'events/attendances',
-                                                                  locals: { event: @event,
-                                                                          creator: @event.creator,
-                                                                      attendances: @event.attendances,
-                                                                           attend: attending, 
-                                                                unattending_users:,
-                                                                   logged_in_user: current_user})
-      end
-     end
   end
 
   def invite
     user_ids = params[:user_ids]
     user_ids.each do |user_id|
-      attendance = Attendance.find_by(user_id:, event_id: @event.id)
+      attendance = Attendance.find_by(attendee_id: user_id, event_id: @event.id)
       if attendance.present?
         attendance.update(status: :pending, invited_user: true)
       else
-        attendance = Attendance.create!(event_id: @event.id, user_id:, status: :pending, invited_user: true)
+        attendance = Attendance.create!(event_id: @event.id, host_id: current_user.id, attendee_id: user_id,
+                                        status: :pending, invited_user: true)
       end
-      Attendance.notify_recipient(attendance.status, @event, @event.creator, attendance.user, @event.id)
+      Attendance.notify_recipient(attendance.status, @event, @event.creator, attendance.attendee, @event.id)
     end
-    respond_to do |format|
-      format.html { redirect_to event_path(@event) }
-      format.turbo_stream { redirect_to event_path(@event, format: :turbo_stream) }
-    end
+    
   end
 
   def cancel_invitation
     attendance = Attendance.find_by(id: params[:attendance_id])
     if attendance
       attendance.update(status: :canceled, invited_user: false)
-      Attendance.notify_recipient(attendance.status, @event, @event.creator, attendance.user, @event.id)
+      Attendance.notify_recipient(attendance.status, @event, @event.creator, attendance.attendee, @event.id)
     else
       flash[:error] = 'Invitation has already been canceled.'
-    end
-    respond_to do |format|
-      format.html { redirect_to event_path(@event) }
-      format.turbo_stream { redirect_to event_path(@event, format: :turbo_stream) }
     end
   end
 
@@ -102,10 +78,6 @@ class EventsController < ApplicationController
     else
       flash[:error] = "We apologize but we didn't find you in the invited list."
     end
-    respond_to do |format|
-      format.html { redirect_to event_path(@event) }
-      format.turbo_stream { redirect_to event_path(@event, format: :turbo_stream) }
-    end
   end
 
   def reject_invite
@@ -115,10 +87,6 @@ class EventsController < ApplicationController
       Attendance.notify_recipient(user_attend.status, @event, @event.creator, current_user, @event.id)
     else
       flash[:error] = 'We apologize but we didnt find you in the list.'
-    end
-    respond_to do |format|
-      format.html { redirect_to event_path(@event) }
-      format.turbo_stream { redirect_to event_path(@event, format: :turbo_stream) }
     end
   end
 
@@ -142,8 +110,8 @@ class EventsController < ApplicationController
   def destroy
     @event.destroy
     respond_to do |format|
-      format.html { redirect_to events_path }
-      format.turbo_stream { redirect_to events_path(format: :turbo_stream) }
+      format.html { redirect_to root_path }
+      format.turbo_stream { redirect_to events_path(format: :turbo_stream), notice: 'Event was destroyed successfully'  }
     end
   end
 

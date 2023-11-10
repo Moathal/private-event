@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# This class represents an attendance record for each attendee in an event it notifies host and attendees if any update occurs to it.  
+# This class represents an attendance record for each attendee in an event it notifies host and attendees if any update occurs to it.
 class Attendance < ApplicationRecord
   belongs_to :event, foreign_key: 'event_id'
   belongs_to :attendee, class_name: 'User', foreign_key: 'attendee_id'
@@ -14,18 +14,18 @@ class Attendance < ApplicationRecord
   after_commit do
     attendance = destroyed? ? nil : self
     creator = event.creator
-    attending_users = Attendance.where('status >= ? AND event_id = ? ', 0, event_id) + [creator]
-    attending_ids = attending_users.pluck(:attendee_id, :id)
-    unattending_users = User.where.not(id: attending_ids).to_a
+    attending_users_attendances = Attendance.where('status >= ? AND event_id = ? ', 0, event_id).reload
+    attending_ids = attending_users_attendances.pluck(:attendee_id) + [creator.id]
+    unattending_users = User.where.not(id: attending_ids).reload
 
-    (attending_users + unattending_users).each do |user|
+    User.all.each do |user|
       broadcast_replace_to([event, "#{user.id}-attendance"],
                            partial: 'events/attendances',
                            locals: { event:,
                                      creator:,
-                                     attendances: attending_users,
+                                     attendances: attending_users_attendances,
                                      attend: attendance,
-                                     unattending_users:,
+                                     unattending_users: unattending_users,
                                      logged_in_user: user },
                            target: 'attendances')
     end
@@ -50,7 +50,7 @@ class Attendance < ApplicationRecord
 
   private
 
-  Clean notifications of the event that has been deleted
+  # Clean notifications of the event that has been deleted
   def cleanup_notifications
     notifications_as_attendance.destroy_all
   end

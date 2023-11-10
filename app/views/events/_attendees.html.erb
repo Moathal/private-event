@@ -1,0 +1,15 @@
+<li>
+  <%= attendance.attendee.fullname %>
+  <% if attendance.invited_user == true %>
+    <% if logged_in_user == event.creator %>
+        <%= button_to "Cancel Invitation", cancel_invitation_event_path(event.id), method: :post, params: { attendance_id: attendance.id }, data: { attendee_id: attendance.attendee_id } %>
+    <br>
+    <%= attendance.status %>
+      <% elsif attendance.status == 'pending' && logged_in_user.id == attendance.attendee_id %>
+      <div class="card">
+        <%= button_to "Accept Invitation", accept_invite_event_path(event.id), method: :post, params: { attendance_id: attendance.id }, data: { attendee_id: attendance.attendee_id } %>
+        <%= button_to "reject Invitation", reject_invite_event_path(event.id), method: :post, params: { attendance_id: attendance.id }, data: { attendee_id: attendance.attendee_id } %>
+      </div>
+    <% end %>
+  <% end %>
+</li>

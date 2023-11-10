@@ -1,17 +1,16 @@
 <%= turbo_frame_tag 'page_content' do %>
-  <h1>All Partyholics</h1>
+  <main>
+    <h1>All Partyholics</h1>
 
-  <% @users.each do | hepee | %>
-    <h2><%= hepee.fullname %></h2>
-    <small><%= hepee.birthday %></small>
-    <%= link_to "See all his events", user_path(hepee.id) %>
-  <% end %>
-
-  <br>
-  <br>
-    <% if current_user %>
-      <%= link_to 'All My events', user_path(current_user.id) %>
+    <% @users.each do | hepee | %>
+      <div class="card">
+        <h2><%= hepee.fullname %></h2>
+        <small><%= hepee.birthday %></small>
+        <%= link_to "See all his events", user_path(hepee.id) %>
+      </div>
     <% end %>
-    <%= link_to 'All events', events_path, data: { turbo_frame: 'page_content' } %>
-  </div>
+
+    <br>
+    <br>
+  </main>
 <% end %>

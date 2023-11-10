@@ -16,10 +16,10 @@
 <% end %>
 
 <br>
-<div style="display: flex; flex-direction: row; gap: 1rem;">
-  <%= link_to 'All My events', user_path(current_user.id), data: { turbo_frame: 'page_content' } %>
-  <%= link_to 'All events', events_path, data: { turbo_frame: 'page_content' } %>
-  <%= link_to 'All users', users_path, data: { turbo_frame: 'page_content' } %>
+<div style="display: flex; flex-direction: row; gap: 0.5rem;">
+  <%= link_to 'All My events', user_path(current_user.id), data: { turbo_frame: 'page_content' }, class: "btn bg-light" %>
+  <%= link_to 'All events', events_path, data: { turbo_frame: 'page_content' }, class: "btn bg-light" %>
+  <%= link_to 'All users', users_path, data: { turbo_frame: 'page_content' }, class: "btn bg-light border-rounded" %>
 </div>
 <br>
 <br>

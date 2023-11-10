@@ -6,8 +6,8 @@
         <%= user.fullname %>
       </label>
     <%= form.hidden_field :event_id, value: event.id %>
-    <%= form.submit "Invite" %>
     <% end %>
+    <%= form.submit "Invite" %>
   <% end %>
 <% else %>
   <h5>No Users!!</h5>

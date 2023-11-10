@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateAttendances < ActiveRecord::Migration[6.0]
   def change
     create_table :attendances do |t|
@@ -8,6 +10,6 @@ class CreateAttendances < ActiveRecord::Migration[6.0]
       t.integer :status
       t.timestamps
     end
-    add_index :attendances, [:host_id, :attendee_id], unique: true
+    add_index :attendances, %i[host_id attendee_id], unique: true
   end
 end

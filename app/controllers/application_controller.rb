@@ -1,5 +1,6 @@
-class ApplicationController < ActionController::Base
+# frozen_string_literal: true
 
+class ApplicationController < ActionController::Base
   include Noticed
 
   before_action -> { set_notification }, if: :current_user
@@ -7,8 +8,7 @@ class ApplicationController < ActionController::Base
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   private
-  
-  
+
   def set_notification
     @notifications = Notification.where(recipient_id: current_user.id).newest_first.limit(9)
     @unread_count = @notifications.unread.count
@@ -22,7 +22,7 @@ class ApplicationController < ActionController::Base
   # end
 
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:fullname, :birthday])
-    devise_parameter_sanitizer.permit(:account_update, keys: [:fullname, :birthday])
+    devise_parameter_sanitizer.permit(:sign_up, keys: %i[fullname birthday])
+    devise_parameter_sanitizer.permit(:account_update, keys: %i[fullname birthday])
   end
 end

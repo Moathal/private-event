@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# the HOST or event creator and also can be event attendee. devise is used for authentication 
+# the HOST or event creator and also can be event attendee. devise is used for authentication
 class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
