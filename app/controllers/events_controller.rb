@@ -8,15 +8,12 @@ class EventsController < ApplicationController
 
   def index
     @events = Event.all.where(public: true).or(Event.where(creator: current_user))
-    # respond_to do |format|
-    #   format.html
-    #   format.turbo_stream { render turbo_stream: turbo_stream.replace('page_content', template: 'events/index') }
-    # end
   end
 
   def show
     if @event.nil?
-      redirect_to events_path, notice: 'Event is removed by its creator!!'
+      redirect_to events_path
+      flash.now[:error] = 'Event is removed by its creator!!'
     else
       @unattending_users = unattending_users
       @attend = attending
@@ -33,11 +30,19 @@ class EventsController < ApplicationController
     @event = current_user.events.build(event_params)
     if @event.save
       respond_to do |format|
-        format.html { redirect_to event_path(@event) }
-        format.turbo_stream { redirect_to event_path(@event, format: :turbo_stream) }
+        format.html
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace('page_content', template: 'events/show') 
+          flash.now[:notice] = 'Event is created!'
+        end
       end
     else
-      render :new
+      respond_to do |format|
+        format.html
+        format.turbo_stream do 
+          render turbo_stream: turbo_stream.replace('page_content', template: 'events/new'), notice: 'All fields must be filled!'
+        end
+      end
     end
   end
 
@@ -47,17 +52,18 @@ class EventsController < ApplicationController
 
   def invite
     user_ids = params[:user_ids]
-    user_ids.each do |user_id|
-      attendance = Attendance.find_by(attendee_id: user_id, event_id: @event.id)
-      if attendance.present?
-        attendance.update(status: :pending, invited_user: true)
-      else
-        attendance = Attendance.create!(event_id: @event.id, host_id: current_user.id, attendee_id: user_id,
-                                        status: :pending, invited_user: true)
+    unless user_ids.nil
+      user_ids.each do |user_id|
+        attendance = Attendance.find_by(attendee_id: user_id, event_id: @event.id)
+        if attendance.present?
+          attendance.update(status: :pending, invited_user: true)
+        else
+          attendance = Attendance.create!(event_id: @event.id, host_id: current_user.id, attendee_id: user_id,
+                                          status: :pending, invited_user: true)
+        end
+        Attendance.notify_recipient(attendance.status, @event, @event.creator, attendance.attendee, @event.id)
       end
-      Attendance.notify_recipient(attendance.status, @event, @event.creator, attendance.attendee, @event.id)
-    end
-    
+  end
   end
 
   def cancel_invitation
@@ -66,7 +72,7 @@ class EventsController < ApplicationController
       attendance.update(status: :canceled, invited_user: false)
       Attendance.notify_recipient(attendance.status, @event, @event.creator, attendance.attendee, @event.id)
     else
-      flash[:error] = 'Invitation has already been canceled.'
+      flash.now[:error] = 'Invitation has already been canceled.'
     end
   end
 
@@ -76,7 +82,7 @@ class EventsController < ApplicationController
       accept_invite_with_attend_record(user_attend)
       Attendance.notify_recipient(user_attend.status, @event, @event.creator, current_user, @event.id)
     else
-      flash[:error] = "We apologize but we didn't find you in the invited list."
+      flash.now[:error] = "We apologize but we didn't find you in the invited list."
     end
   end
 
@@ -86,7 +92,7 @@ class EventsController < ApplicationController
       reject_invite_with_attend_record(user_attend)
       Attendance.notify_recipient(user_attend.status, @event, @event.creator, current_user, @event.id)
     else
-      flash[:error] = 'We apologize but we didnt find you in the list.'
+      flash.now[:error] = 'We apologize but we didnt find you in the list.'
     end
   end
 
@@ -97,10 +103,11 @@ class EventsController < ApplicationController
   def update
     if @event.update(event_params)
       respond_to do |format|
-        format.html { redirect_to event_path(@event) }
-        format.turbo_stream do
-          redirect_to event_path(@event, format: :turbo_stream), notice: 'Event updated successfully.'
-        end
+          format.html
+          format.turbo_stream do 
+           render turbo_stream: turbo_stream.replace('page_content', template: 'events/show')   
+           flash.now[:notice] = 'event is updated successfully!'
+          end
       end
     else
       render :edit
@@ -109,9 +116,13 @@ class EventsController < ApplicationController
 
   def destroy
     @event.destroy
+    @events = Event.all.where(public: true).or(Event.where(creator: current_user))
     respond_to do |format|
-      format.html { redirect_to root_path }
-      format.turbo_stream { redirect_to events_path(format: :turbo_stream), notice: 'Event was destroyed successfully'  }
+      format.html
+      format.turbo_stream do 
+        redirect_to events_path
+        flash.now[:notice] = 'Event was destroyed successfully!'
+      end
     end
   end
 

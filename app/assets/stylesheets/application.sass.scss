@@ -1,1 +1,14 @@
 // Entry point for your Sass build
+@import "mixins/media";
+
+// Configuration
+@import "config/variables";
+@import "config/reset";
+@import "config/animations";
+
+// Components
+@import "components/error_message";
+@import "components/visually_hidden";
+@import "components/flash";
+@import "components/container";
+@import "components/header";

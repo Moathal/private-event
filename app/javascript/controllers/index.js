@@ -4,5 +4,5 @@
 
 import { application } from "./application"
 
-import NavCallsActionController from "./nav_calls_action_controller"
-application.register("nav-calls-action", NavCallsActionController)
+import RemovalsController from "./removals_controller"
+application.register("removals", RemovalsController)
