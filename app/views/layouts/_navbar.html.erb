@@ -1,0 +1,62 @@
+<nav class="navbar bg-body-tertiary fixed-top">
+  <div class="container-fluid d-flex justify-content-between">
+    <% if user_signed_in? %>
+    <a class="navbar-brand" href="<%= user_path(current_user.id) %>"><%= current_user.fullname %></a>
+
+    <div class="nav-item dropdown">
+      <a class="nav-link d-flex gap-2 dropdown-toggle" style="width: 170px" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <h6 class="text-dark">Notifications</h6>
+        <%= turbo_stream_from current_user, "notificationsCount" %>
+        <%= render 'layouts/count', unread_count: @unread_count %>
+      </a>
+      <%= turbo_stream_from current_user, "notifications" %>
+      <ul class="dropdown-menu dropdown-menu-lg-end" aria-labelledby="navbarDropdown">
+          <%= render partial: 'layouts/notifications', locals: { notifications: @notifications, unread_count: @unread_count, read_count:
+@read_count  }%>
+      </ul>
+    </div>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+       <div class="offcanvas-header">
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body" data-controller="responsive-nav">
+      <ul class="navbar-nav mb-2 mb-lg-0">
+        <li class="nav-item">
+          <%= link_to 'Add new Event', new_event_path, data: { turbo_frame: 'page_content', locals: Event.new }, class: "nav-link actual" %>
+        </li>
+        <li class="nav-item">
+          <%= link_to 'All events', root_path, data: { turbo_frame: 'page_content' }, class: "nav-link actual" %>
+        </li>
+        <li class="nav-item">
+          <%= link_to 'All My events', user_path(current_user.id), data: { turbo_frame: 'page_content' }, class: "nav-link actual" %>
+        </li>
+        <li class="nav-item">
+          <%= link_to 'All users', users_path, data: { turbo_frame: 'page_content' }, class: "nav-link actual" %>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Account
+          </a>
+          <ul class="dropdown-menu">
+            <li class="dropdown-item">
+<li class="dropdown-item">
+  <%= link_to "Edit profile", edit_user_registration_path,  data: { turbo_frame: 'page_content', locals: current_user, template: "devise/registrations/edit" }, method: :get, class: "dropdown-item actual" %>
+</li>
+            <li><hr class="dropdown-divider"></li>
+            <li><%= button_to "Sign out", destroy_user_session_path, method: :delete, turbo_method: :delete, class: "dropdown-item p-1 text-lg-center text-light m-auto btn bg-danger actual", style: "max-width: 50%;" %></li>
+          </ul>
+        </li>
+        </li>
+      </ul>
+      </div>
+  <% else %>
+    <li class="nav-item"><%= link_to "Sign_in", new_user_session_path, method: :get, class: "nav-link" %></li>
+    <li class="nav-item"><%= link_to "Register", new_user_registration_path, method: :get, class: "ms-auto btn bg-danger" %>
+  <% end %>
+    </div>
+  </div>
+</nav>

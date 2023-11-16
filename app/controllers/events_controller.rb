@@ -12,8 +12,8 @@ class EventsController < ApplicationController
 
   def show
     if @event.nil?
-      redirect_to events_path
       flash.now[:error] = 'Event is removed by its creator!!'
+      redirect_to events_path
     else
       @unattending_users = unattending_users
       @attend = attending
@@ -32,15 +32,16 @@ class EventsController < ApplicationController
       respond_to do |format|
         format.html
         format.turbo_stream do
-          render turbo_stream: turbo_stream.replace('page_content', template: 'events/show') 
           flash.now[:notice] = 'Event is created!'
+          render turbo_stream: turbo_stream.replace('page_content', template: 'events/show') 
         end
       end
     else
       respond_to do |format|
         format.html
         format.turbo_stream do 
-          render turbo_stream: turbo_stream.replace('page_content', template: 'events/new'), notice: 'All fields must be filled!'
+          flash.now[:notice] = 'All fields must be filled!'
+          render turbo_stream: turbo_stream.replace('page_content', template: 'events/new')
         end
       end
     end
@@ -105,8 +106,8 @@ class EventsController < ApplicationController
       respond_to do |format|
           format.html
           format.turbo_stream do 
-           render turbo_stream: turbo_stream.replace('page_content', template: 'events/show')   
            flash.now[:notice] = 'event is updated successfully!'
+           render turbo_stream: turbo_stream.replace('page_content', template: 'events/show')   
           end
       end
     else
@@ -120,8 +121,8 @@ class EventsController < ApplicationController
     respond_to do |format|
       format.html
       format.turbo_stream do 
-        redirect_to events_path
         flash.now[:notice] = 'Event was destroyed successfully!'
+        redirect_to events_path
       end
     end
   end

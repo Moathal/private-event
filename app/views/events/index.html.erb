@@ -1,26 +1,18 @@
-<%= turbo_frame_tag "page_content" do %>
+<%= turbo_frame_tag "page_content", class: "container mt-5" do %>
   <% if @events.empty?%>
     <h3>No events are held</h3>
   <% else %>
+  <div class="d-flex justify-content-center flex-wrap">
     <% @events.each do | event | %>
-
-      <h3><%= event.name %></h3>
-      <h3><%= event.location %></h3>
-      <h3><%= event.date %></h3>
-      <h3><%= event.creator.fullname %></h3>
-      <%= link_to "Show event", event_path(event.id), data: { turbo_frame: 'page_content' } %>
-      <br>
-      <br>
+     <div class="card border-secondary m-1" style="width: 15rem;">
+      <div class="card-header"><%= event.name %></div>
+        <div class="card-body text-secondary">
+          <h5 class="card-title"><small>Its in </small><%= event.date %></h5>
+          <h5 class="card-title"><small>Host is </small><%= event.creator.fullname %></h5>
+          <%= link_to "Show event", event_path(event.id), data: { turbo_frame: 'page_content' }, class: "mt-2" %>
+        </div>
+      </div>
     <% end %>
+  </div>
   <% end %>
 <% end %>
-
-<br>
-<div style="display: flex; flex-direction: row; gap: 0.5rem;">
-  <%= link_to 'All My events', user_path(current_user.id), data: { turbo_frame: 'page_content' }, class: "btn bg-light" %>
-  <%= link_to 'All events', events_path, data: { turbo_frame: 'page_content' }, class: "btn bg-light" %>
-  <%= link_to 'All users', users_path, data: { turbo_frame: 'page_content' }, class: "btn bg-light border-rounded" %>
-</div>
-<br>
-<br>
-<%= link_to 'Add new Event', new_event_path, data: { turbo_frame: 'page_content', locals: Event.new } %>
