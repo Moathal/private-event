@@ -2,7 +2,7 @@
   <%= attendance.attendee.fullname %>
   <% if attendance.invited_user == true %>
     <% if logged_in_user == event.creator %>
-        <%= button_to "Cancel Invitation", cancel_invitation_event_path(event.id), method: :post, params: { attendance_id: attendance.id }, data: { attendee_id: attendance.attendee_id } %>
+        <%= button_to "Cancel Invitation", cancel_invitation_event_path(event.id), method: :post, params: { attendance_id: attendance.id }, data: { attendee_id: attendance.attendee_id }, class: "btn btn-info" %>
     <br>
     <%= attendance.status %>
       <% elsif attendance.status == 'pending' && logged_in_user.id == attendance.attendee_id %>

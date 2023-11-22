@@ -9,3 +9,6 @@ application.register("removals", RemovalsController)
 
 import ResponsiveNavController from "./responsive_nav_controller"
 application.register("responsive-nav", ResponsiveNavController)
+
+import UnreadNotifsCountController from "./unread_notifs_count_controller"
+application.register("unread-notifs-count", UnreadNotifsCountController)

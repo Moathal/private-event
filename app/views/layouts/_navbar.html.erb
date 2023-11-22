@@ -4,8 +4,12 @@
     <a class="navbar-brand" href="<%= user_path(current_user.id) %>"><%= current_user.fullname %></a>
 
     <div class="nav-item dropdown">
-      <a class="nav-link d-flex gap-2 dropdown-toggle" style="width: 170px" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        <h6 class="text-dark">Notifications</h6>
+      <a class="nav-link d-flex justify-content-center align-items-center dropdown-toggle position-relative" style="width: fit-content; min-height: 40px;" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i>
+          <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
+            <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
+          </svg>
+        </i>
         <%= turbo_stream_from current_user, "notificationsCount" %>
         <%= render 'layouts/count', unread_count: @unread_count %>
       </a>
@@ -23,13 +27,13 @@
        <div class="offcanvas-header">
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
-      <div class="offcanvas-body" data-controller="responsive-nav">
+      <div class="offcanvas-body" data-controller="responsive-nav" data-responsive-nav-classname="actual">
       <ul class="navbar-nav mb-2 mb-lg-0">
         <li class="nav-item">
-          <%= link_to 'Add new Event', new_event_path, data: { turbo_frame: 'page_content', locals: Event.new }, class: "nav-link actual" %>
+          <%= link_to 'All events', root_path, data: { turbo_frame: 'page_content' }, class: "nav-link actual active", 'aria-selected': "true" %>
         </li>
         <li class="nav-item">
-          <%= link_to 'All events', root_path, data: { turbo_frame: 'page_content' }, class: "nav-link actual" %>
+          <%= link_to 'Add new Event', new_event_path, data: { turbo_frame: 'page_content', locals: Event.new }, class: "nav-link actual" %>
         </li>
         <li class="nav-item">
           <%= link_to 'All My events', user_path(current_user.id), data: { turbo_frame: 'page_content' }, class: "nav-link actual" %>
@@ -47,7 +51,7 @@
   <%= link_to "Edit profile", edit_user_registration_path,  data: { turbo_frame: 'page_content', locals: current_user, template: "devise/registrations/edit" }, method: :get, class: "dropdown-item actual" %>
 </li>
             <li><hr class="dropdown-divider"></li>
-            <li><%= button_to "Sign out", destroy_user_session_path, method: :delete, turbo_method: :delete, class: "dropdown-item p-1 text-lg-center text-light m-auto btn bg-danger actual", style: "max-width: 50%;" %></li>
+            <li><%= button_to "Sign out", destroy_user_session_path, method: :delete, turbo_method: :delete, class: "dropdown-item p-1 text-center text-light m-auto btn bg-danger actual", style:"max-width: 70% !important;" %></li>
           </ul>
         </li>
         </li>
