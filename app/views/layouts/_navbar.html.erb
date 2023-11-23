@@ -1,9 +1,9 @@
-<nav class="navbar bg-body-tertiary fixed-top">
+<nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
   <div class="container-fluid d-flex justify-content-between">
     <% if user_signed_in? %>
     <a class="navbar-brand" href="<%= user_path(current_user.id) %>"><%= current_user.fullname %></a>
 
-    <div class="nav-item dropdown">
+    <div class="nav-item dropdown ms-lg-auto">
       <a class="nav-link d-flex justify-content-center align-items-center dropdown-toggle position-relative" style="width: fit-content; min-height: 40px;" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
         <i>
           <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
@@ -14,7 +14,7 @@
         <%= render 'layouts/count', unread_count: @unread_count %>
       </a>
       <%= turbo_stream_from current_user, "notifications" %>
-      <ul class="dropdown-menu dropdown-menu-lg-end" aria-labelledby="navbarDropdown">
+      <ul class="dropdown-menu dropdown-menu-lg-start" style="left: 50% !important; transform: translateX(-50%);" aria-labelledby="navbarDropdown">
           <%= render partial: 'layouts/notifications', locals: { notifications: @notifications, unread_count: @unread_count, read_count:
 @read_count  }%>
       </ul>
@@ -23,7 +23,7 @@
     <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+    <div class="offcanvas offcanvas-end mx-lg-auto" style="max-width: 70% !important;" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
        <div class="offcanvas-header">
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
@@ -45,8 +45,7 @@
           <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Account
           </a>
-          <ul class="dropdown-menu">
-            <li class="dropdown-item">
+          <ul class="dropdown-menu dropdown-menu-lg-end">
 <li class="dropdown-item">
   <%= link_to "Edit profile", edit_user_registration_path,  data: { turbo_frame: 'page_content', locals: current_user, template: "devise/registrations/edit" }, method: :get, class: "dropdown-item actual" %>
 </li>
@@ -58,8 +57,10 @@
       </ul>
       </div>
   <% else %>
-    <li class="nav-item"><%= link_to "Sign_in", new_user_session_path, method: :get, class: "nav-link" %></li>
-    <li class="nav-item"><%= link_to "Register", new_user_registration_path, method: :get, class: "ms-auto btn bg-danger" %>
+    <ul class="navbar-nav mb-2 mb-lg-0 d-flex flex-row justify-content-between" style="width: 100% !important;">
+      <li class="nav-item"><%= link_to "Sign in", new_user_session_path, method: :get, class: "nav-link" %></li>
+      <li class="nav-item"><%= link_to "Register", new_user_registration_path, method: :get, class: "nav-link" %>
+    </ul>
   <% end %>
     </div>
   </div>

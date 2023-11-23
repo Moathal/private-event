@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html style="height: 100%">
   <head>
     <title>PrivateEvent</title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -11,14 +11,14 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
   </head>
 
-  <body class="d-flex flex-column justify-content-center p-2">
+  <body class="d-flex flex-column justify-content-center p-1" style="min-height: 100% !important;">
     <div>
       <%= render 'layouts/navbar', read_count: @read_count, unread_count: @unread_count %>
     </div>
      <div class="flash" id="flash">
       <%= render 'layouts/flash' %>
      </div>
-     <div class="container mt-5 d-flex flex-column">
+     <div class="container mt-5 d-flex flex-column justify-content-center" style="min-height: 100% !important;">
         <%= yield %>
      </div>
       <br>
