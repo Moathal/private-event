@@ -1,5 +1,5 @@
-  <li class="dropdown-item">
-    <%= link_to notification.to_notification.message, notification.to_notification.url, class: "text-decoration-none flex-wrap", data: {turbo_frame: 'page_content'} %>
+  <li class="dropdown-item border-bottom" style="width: 100% !important;">
+    <%= link_to notification.to_notification.message, notification.to_notification.url, class: "text-decoration-none text-wrap", data: {turbo_frame: 'page_content'} %>
   <% if notification.unread? %>
       <hr class="dropdown-divider bg-primary">
   <% end %>

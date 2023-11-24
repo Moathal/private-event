@@ -53,7 +53,7 @@ class EventsController < ApplicationController
 
   def invite
     user_ids = params[:user_ids]
-    unless user_ids.nil
+    unless user_ids.nil?
       user_ids.each do |user_id|
         attendance = Attendance.find_by(attendee_id: user_id, event_id: @event.id)
         if attendance.present?
