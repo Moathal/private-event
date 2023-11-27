@@ -1,9 +1,9 @@
 <%= turbo_frame_tag 'page_content' do %>
   <main>
-    <h1>All Partyholics</h1>
+    <h2 class="mb-5 text-muted">ALL USERS</h2>
 
     <% @users.each do | hepee | %>
-      <div class="card">
+      <div class="card m-3 p-2">
         <h2><%= hepee.fullname %></h2>
         <small><%= hepee.birthday %></small>
         <%= link_to "See all his events", user_path(hepee.id) %>

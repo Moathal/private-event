@@ -27,8 +27,8 @@
        <div class="offcanvas-header">
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
-      <div class="offcanvas-body" data-controller="responsive-nav" data-responsive-nav-classname="actual" data-action="click->responsive-nav#clickMainNav">
-      <ul class="navbar-nav mb-2 mb-lg-0">
+      <div class="offcanvas-body">
+      <ul class="navbar-nav mb-2 mb-lg-0" data-controller="responsive-nav" data-responsive-nav-classname="actual" data-action="click->responsive-nav#clickMainNav">
         <li class="nav-item">
           <%= link_to 'All events', root_path, data: { turbo_frame: 'page_content' }, class: "nav-link actual active", 'aria-selected': "true" %>
         </li>
@@ -42,7 +42,7 @@
           <%= link_to 'All users', users_path, data: { turbo_frame: 'page_content' }, class: "nav-link actual" %>
         </li>
         <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <a class="nav-link dropdown-toggle" id="dropdown-list-expand-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             Account
           </a>
           <ul class="dropdown-menu dropdown-menu-lg-end">

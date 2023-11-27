@@ -1,39 +1,79 @@
-<%= turbo_frame_tag 'page_content' do %>
-  <main>
-    <h1>The partyholic Miss/Mrs./Mr. <%= @user.fullname %></h1>
-    <div>
-      <h3>Events created</h3>
-      <% @user.events.each do | event | %>
-        <h4><%= event.name %></h4>
-        <h4> at <%= event.location %></h4>
-        <small> in <% event.date %></small>
-      <h4><%= link_to 'See Event', event_path(event.id) %></h4>
+<%= turbo_frame_tag 'page_content', style: "min-height: 100% !important;" do %>
+    <h2 class="mb-5 text-muted">YOUR SCHEDUALE</h2>
+      <ul class="nav nav-tabs mt-4" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link tab-link active" id="created-tab" data-bs-toggle="tab" data-bs-target="#created" type="button" role="tab" aria-controls="created" aria-selected="true" data-controller="responsive-nav" data-responsive-nav-classname="tab-pane" data-responsive-nav-ele-id="created" data-action="click->responsive-nav#clickEventNav">
+        <h4>Events created</h4></button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link tab-link" id="comming-up-tab" data-bs-toggle="tab" data-bs-target="#comming-up" type="button" role="tab" aria-controls="comming-up" aria-selected="true" data-controller="responsive-nav" data-responsive-nav-classname="tab-pane" data-responsive-nav-ele-id="comming-up" data-action="click->responsive-nav#clickEventNav">
+        <h4>Comming up Events</h4></button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link tab-link" id="past-tab" data-bs-toggle="tab" data-bs-target="#past" type="button" role="tab" aria-controls="past" aria-selected="true" data-controller="responsive-nav" data-responsive-nav-classname="tab-pane" data-responsive-nav-ele-id="past" data-action="click->responsive-nav#clickEventNav">
+        <h4>Past Events</h4></button>
+    </li>
+  </ul>
+
+<div class="tab-content mt-1" id="myTabContent" style="min-height: 60% !important;">
+  <div class="tab-pane fade active show" id="created" role="tabpanel" aria-labelledby="created-tab" >
+    <div class="d-flex justify-content-center flex-wrap">
+      <% if !@user.events.empty? %>
+        <% @user.events.each do | event | %>
+          <div class="card border-secondary m-1" style="width: 15rem;">
+            <div class="card-header"><%= event.name %></div>
+              <div class="card-body text-secondary">
+                <h5 class="card-title"><small>Its in </small><%= event.location %></h5>
+                <h5 class="card-title"><small>Its in </small><%= event.date %></h5>
+                <h5 class="card-title"><small>Host is </small><%= event.creator.fullname %></h5>
+                <%= link_to "Show event", event_path(event.id), data: { turbo_frame: 'page_content' }, class: "mt-2" %>
+              </div>
+          </div>
+        <% end %>
+      <% else %>
+        <h2 class="my-auto">THERE ARE NO EVENTS!!</h2>
       <% end %>
     </div>
+  </div>
 
-    <div>
-      <h3>Events Attending</h3>
-      <div>
-        <h4>Comming up Events</h4>
-        <% @user.attended_events.future_attending_events.each do | event | %>
-          <h4><%= event.name %></h4>
-          <h4> by <%= event.creator.fullname %></h4>
-          <h4> in  <%= event.location %></h4>
-          <small> at <% event.date %></small>
-          <h4><%= link_to 'See Event', event_path(event.id) %></h4>
+    <div class="tab-pane fade" id="comming-up" role="tabpanel" aria-labelledby="comming-up-tab" style="min-height: 60% !important;">
+      <div class="d-flex justify-content-center flex-wrap">
+        <% if !@user.attended_events.future_attending_events.empty? %>
+          <% @user.attended_events.future_attending_events.each do | event | %>
+            <div class="card border-secondary m-1" style="width: 15rem;">
+              <div class="card-header"><%= event.name %></div>
+                <div class="card-body text-secondary">
+                  <h5 class="card-title"><small>Its in </small><%= event.location %></h5>
+                  <h5 class="card-title"><small>Its in </small><%= event.date %></h5>
+                  <h5 class="card-title"><small>Host is </small><%= event.creator.fullname %></h5>
+                  <%= link_to "Show event", event_path(event.id), data: { turbo_frame: 'page_content' }, class: "mt-2" %>
+                </div>
+            </div>
+          <% end %>
+        <% else %>
+          <h2 class="my-auto">THERE ARE NO EVENTS!!</h2>
         <% end %>
-      </div>
+    </div>
+  </div>
 
-      <div>
-        <h4>Past Events</h4>
+    <div class="tab-pane fade" id="past" role="tabpanel" aria-labelledby="past-tab" style="min-height: 60% !important;" >
+    <div class="d-flex justify-content-center flex-wrap">
+      <% if !@user.attended_events.past_attending_events.empty? %>
         <% @user.attended_events.past_attending_events.each do | event | %>
-          <h4><%= event.name %></h4>
-          <h4> by <%= event.creator.fullname %></h4>  
-          <h4> in <%= event.location %></h4>
-          <small> at <% event.date %></small>
-          <h4><%= link_to 'See Event', event_path(event.id) %></h4>
+          <div class="card border-secondary m-1" style="width: 15rem;">
+            <div class="card-header"><%= event.name %></div>
+              <div class="card-body text-secondary">
+                <h5 class="card-title"><small>Its in </small><%= event.location %></h5>
+                <h5 class="card-title"><small>Its in </small><%= event.date %></h5>
+                <h5 class="card-title"><small>Host is </small><%= event.creator.fullname %></h5>
+                <%= link_to "Show event", event_path(event.id), data: { turbo_frame: 'page_content' }, class: "mt-2" %>
+            </div>
+          </div>
         <% end %>
-    </div>
-    </div>
-  </main>
+      <% else %>
+        <h2 class="my-auto">THERE ARE NO EVENTS!!</h2>
+      <% end %>
+  </div>
+  </div>
+</div>
 <% end %>

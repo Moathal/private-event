@@ -1,9 +1,10 @@
-<h2 class="mb-5 text-muted">REGISTER</h2>
+<div class="d-flex flex-column align-items-start px-3" style= "width: 80% !important;">
+<h2 class="mb-5 text-muted align-self-start">REGISTER</h2>
 
-<%= form_for(resource, as: resource_name, html: { class: "d-flex flex-column justify-content-center" }, url: registration_path(resource_name)) do |f| %>
+<%= form_for(resource, as: resource_name, html: { class: "d-flex flex-column justify-content-start ps-3", style: "width: 70% !important;" }, url: registration_path(resource_name)) do |f| %>
   <%= render "devise/shared/error_messages", resource: resource %>
 
-  <div class="d-flex flex-row flex-wrap">
+  <div class="d-flex flex-row flex-wrap gap-2">
     <div class="field m-1" style="max-width: 40%;">
       <%= f.label :fullname %><br />
       <%= f.text_field :fullname, autofocus: true, autocomplete: "fullname" %>
@@ -36,6 +37,7 @@
   <div class="actions ms-1 my-2" style="max-width: 40%;">
     <%= f.submit "Sign up", class: "btn bg-danger text-light" %>
   </div>
+<%= render "devise/shared/links", class: "align-self-start" %>
 <% end %>
 
-<%= render "devise/shared/links" %>
+</div>

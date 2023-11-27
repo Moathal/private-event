@@ -1,5 +1,5 @@
 <%= turbo_frame_tag 'page_content', class: "container", style: "align-self: center !important;" do %>
-  <h1>Edit Event</h1>
+  <h2 class="mb-5 mt-1 text-muted">Edit <span> <%= @event.name %> </span> EVENT</h2>
   <%= form_for @event do |f| %>
 
     <div>

@@ -13,7 +13,7 @@ class Attendance < ApplicationRecord
 
   after_commit do
     attendance = destroyed? ? nil : self
-    creator = event.creator
+    creator = event.creator.nil? ? nil : event.creator
     attending_users_attendances = Attendance.where('status >= ? AND event_id = ? ', 0, event_id).reload
     attending_ids = attending_users_attendances.pluck(:attendee_id) + [creator.id]
     unattending_users = User.where.not(id: attending_ids).reload

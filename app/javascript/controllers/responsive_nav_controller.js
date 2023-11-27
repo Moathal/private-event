@@ -11,10 +11,12 @@ export default class extends Controller {
   }
   
   clickMainNav(event) {
-    let actualLink = `.${this.data.get("classname")}`;
-    const navButton = event.target;
+    if (event.target.id !== "dropdown-list-expand-link"){  
+      let actualLink = `.${this.data.get("classname")}`;
+      const navButton = event.target;
 
-    this.hideShow(navButton, actualLink);
+      this.hideShow(navButton, actualLink);
+    }
   }
 
   hideShow(element, className) {

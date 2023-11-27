@@ -11,14 +11,12 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
   </head>
 
-  <body class="d-flex flex-column justify-content-center p-1" style="min-height: 100% !important;">
-    <div>
+  <body class="d-flex flex-column p-1" style="min-height: 100% !important;">
       <%= render 'layouts/navbar', read_count: @read_count, unread_count: @unread_count %>
-    </div>
      <div class="flash" id="flash">
       <%= render 'layouts/flash' %>
      </div>
-     <div class="container mt-5 d-flex flex-column justify-content-center" style="min-height: 100% !important;">
+     <div class= "d-flex flex-column justify-content-center align-items-center px-lg-5 px-sm-2" style="min-height: 80%!important; margin-top: 75px !important;">
         <%= yield %>
      </div>
       <br>

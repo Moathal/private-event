@@ -1,6 +1,7 @@
 <%= turbo_frame_tag "page_content", class: "container", style: "align-self: center !important;" do %>
+  <h2 class="mb-5 mt-2 text-muted">EVENTS</h2>
   <% if @events.empty?%>
-    <h3>No events are held</h3>
+    <h3 m-auto>No events are held</h3>
   <% else %>
   <div class="d-flex justify-content-center flex-wrap">
     <% @events.each do | event | %>
