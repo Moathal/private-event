@@ -42,8 +42,8 @@ module EventsHelper
   def unattending_users
     return [] if @event.nil?
 
-    attending_users = Attendance.where('status >= ? AND event_id = ? ', 0, @event.id) + [@event.creator]
-    attending_ids = attending_users.pluck(:attendee_id, :id)
+    attending_users = Attendance.where.not(status: ["canceled", "rejected"]).where(event_id: @event.id)
+    attending_ids = attending_users.pluck(:id) + [ @event.creator_id ]
     User.where.not(id: attending_ids)
   end
 

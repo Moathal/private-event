@@ -9,7 +9,7 @@ class Event < ApplicationRecord
   has_many :attendees, through: :attendances
 
   has_noticed_notifications model_name: 'Notification'
-  has_many :notifications, through: :attendance
+  has_many :notifications, through: :attendance, dependent: :destroy
 
   scope :past_attending_events, -> { where('date < ?', Date.today) }
   scope :future_attending_events, -> { where('date >= ?', Date.today) }
@@ -21,6 +21,7 @@ class Event < ApplicationRecord
   # Callbacks to trigger the `notify_recipients` method after update and create
   after_update ->(event) { event.notify_recipients(self, 'update', creator, event.attendees_for_sure, id) }
   after_create ->(event) { event.notify_recipients(self, 'create', creator, User.where.not(id: event.creator_id), id) }
+  after_destroy :cleanup_notifications
 
   # The method that triggers event_notification
   def notify_recipients(event, action, creator, recipients, event_id)
@@ -31,5 +32,9 @@ class Event < ApplicationRecord
   def attendees_for_sure
     statuses = %w[accepted pending]
     attendees.where(attendances: { status: statuses })
+  end
+
+  def cleanup_notifications
+    notifications_as_event.destroy_all
   end
 end

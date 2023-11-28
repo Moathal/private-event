@@ -1,14 +1,21 @@
 <% if unattending_users.present? %>
-  <%= form_with(url: invite_event_path(event.id), html: { class: "d-flex flex column" }) do |form| %>
-    <% unattending_users.each do |user| %>
-      <label>
-        <%= form.check_box :user_ids, { multiple: true }, user.id, nil %>
-        <%= user.fullname %>
-      </label>
+  <%= form_with(url: invite_event_path(event.id), html: { class: "d-flex flex-column" }) do |form| %>
     <%= form.hidden_field :event_id, value: event.id %>
+    <%= form.submit "Invite", class: "btn bg-danger text-light mt-2 ms-auto" %>
+    <div class="d-flex flex-wrap">
+    <% unattending_users.each do |user| %>
+      <% if ["canceled", "rejected"].include?(user.attendances.find_by(event_id: event.id).status) %>
+        <label>
+          <div class="card m-2 p-2">
+            <%= form.check_box :user_ids, { multiple: true }, user.id, nil %>
+            <h2 class="m-1"><%= user.fullname %></h2>
+            <small , class="m-1"><%= user.birthday %></small>
+          </div>
+        </label>
+      <% end %>
     <% end %>
-    <%= form.submit "Invite" %>
   <% end %>
+  </div>
 <% else %>
   <h5>No Users!!</h5>
 <% end %>

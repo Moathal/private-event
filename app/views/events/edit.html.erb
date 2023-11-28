@@ -1,27 +1,28 @@
 <%= turbo_frame_tag 'page_content', class: "container", style: "align-self: center !important;" do %>
   <h2 class="mb-5 mt-1 text-muted">Edit <span> <%= @event.name %> </span> EVENT</h2>
   <%= form_for @event do |f| %>
+    <div class="d-flex flex-row flex-wrap gap-2 m-2">
+      <div>
+        <%= f.label :name %>
+        <%= f.text_field :name %>
+      </div>
 
-    <div>
-      <%= f.label :name %>
-      <%= f.text_field :name %>
+      <div>
+        <%= f.label :location %>
+        <%= f.text_field :location %>
+      </div>
     </div>
 
-    <div>
-      <%= f.label :location %>
-      <%= f.text_field :location %>
+    <div class="m-2 my-3">
+      <%= f.label :date %>
+      <%= f.date_field :date %>
     </div>
 
-    <div>
-    <%= f.label :date %>
-    <%= f.date_field :date %>
-    </div>
-
-    <div>
+    <div class="m-2">
       <%= f.label :public %>
       <%= f.check_box :public %>
     </div>
 
-    <%= f.submit "Submit", disable_with: 'Submiting...' %>
+    <%= f.submit "Submit", disable_with: 'Submiting...', class: "btn bg-danger text-light m-2" %>
   <% end %>
 <% end %>
