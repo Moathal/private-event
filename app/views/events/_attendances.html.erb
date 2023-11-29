@@ -18,19 +18,19 @@
   <div class="tab-content" id="myTabContent">
     <div class="tab-pane fade show active" id="attendees" role="tabpanel" aria-labelledby="attendees-tab" >
         <div class="d-flex flex-column justify-content-center align-items-center g-2">
-    <ul class="d-flex flex-column justify-content-center align-items-center g-1">
+    <ul class="d-flex flex-wrap justify-content-center align-items-center g-1">
       <% if attendances.any? %>
         <% attendances.each do |attendance| %>
           <% if attendance.status != "canceled" && attendance.status != "rejected" %>
              <label>
               <div class="card m-2 p-2">
-                <%= render 'events/attendees', event: event, logged_in_user: logged_in_user, attendance: attendance %>
+                <%= render 'events/attendee', event: event, logged_in_user: logged_in_user, attendance: attendance %>
               </div>
              </label>
           <% end %>
         <% end %>
-        <% else %>
-          <h3 class="m-auto">No one is attending!!</h3>
+      <% else %>
+        <h3 class="m-auto">No one is attending!!</h3>
       <% end %>
     </ul>
   </div>

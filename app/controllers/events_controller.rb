@@ -18,7 +18,6 @@ class EventsController < ApplicationController
       @unattending_users = unattending_users
       @attend = attending
     end
-
     mark_current_user_event_notifications_as_read
   end
 
