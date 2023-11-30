@@ -1,21 +1,19 @@
-<h1>Events</h1>
-<% @events.each do | event | %>
-
-  <h3><%= event.name %></h3>
-  <h3><%= event.location %></h3>
-  <h3><%= event.date %></h3>
-  <h3><%= event.creator.fullname %></h3>
-  <%= link_to "Show event", event_path(event.id) %>
-  <br>
-  <br>
-<% end %>
-<br>
-<div style="display: flex; flex-direction: row; gap: 1rem;">
-  <% if current_user %>
-    <%= link_to 'All My events', user_path(current_user.id) %>
+<%= turbo_frame_tag "page_content", class: "container", style: "align-self: center !important;" do %>
+  <h2 class="mb-5 mt-2 text-muted">EVENTS</h2>
+  <% if @events.empty?%>
+    <h3 m-auto>No events are held</h3>
+  <% else %>
+  <div class="d-flex justify-content-center flex-wrap">
+    <% @events.each do | event | %>
+     <div class="card border-secondary m-1" style="width: 15rem;">
+      <div class="card-header"><%= event.name %></div>
+        <div class="card-body text-secondary">
+          <h5 class="card-title"><small>Its in </small><%= event.date %></h5>
+          <h5 class="card-title"><small>Host is </small><%= event.creator.fullname %></h5>
+          <%= link_to "Show event", event_path(event.id), data: { turbo_frame: 'page_content' }, class: "mt-2" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
   <% end %>
-  <%= link_to 'All users', users_path %>
-</div>
-<br>
-<br>
-<%= link_to 'Add new Event', new_event_path %>
+<% end %>

@@ -1,0 +1,5 @@
+<%= turbo_frame_tag "count" do %>
+  <span class="badge rounded-pill bg-danger me-auto m-auto position-absolute top-20 start-100 translate-middle" id="unreadCount" data-controller="unread-notifs-count" data-unread-notifs-count-unreadcount="<%= unread_count %>">
+    <%= unread_count >= 9 ? "9+" : unread_count %>
+  </span>
+<% end %>

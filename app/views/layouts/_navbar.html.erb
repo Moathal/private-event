@@ -1,0 +1,67 @@
+<nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top border-bottom">
+  <div class="container-fluid d-flex justify-content-between">
+    <% if user_signed_in? %>
+    <a class="navbar-brand" href="<%= user_path(current_user.id) %>"><%= current_user.fullname %></a>
+
+    <div class="nav-item dropdown ms-lg-auto" style="min-width: 30% !important;">
+      <a class="nav-link d-flex justify-content-center align-items-center dropdown-toggle position-relative mx-auto" style="width: fit-content; min-height: 40px;" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <i>
+          <svg xmlns="http://www.w3.org/2000/svg" width="21" height="21" fill="currentColor" class="bi bi-bell-fill" viewBox="0 0 16 16">
+            <path d="M8 16a2 2 0 0 0 2-2H6a2 2 0 0 0 2 2m.995-14.901a1 1 0 1 0-1.99 0A5.002 5.002 0 0 0 3 6c0 1.098-.5 6-2 7h14c-1.5-1-2-5.902-2-7 0-2.42-1.72-4.44-4.005-4.901z"/>
+          </svg>
+        </i>
+        <%= turbo_stream_from current_user, "notificationsCount" %>
+        <%= render 'layouts/count', unread_count: @unread_count %>
+      </a>
+      <%= turbo_stream_from current_user, "notifications" %>
+      <ul class="dropdown-menu dropdown-menu-lg-start" style="left: 50% !important; transform: translateX(-50%); width: 100% !important;" aria-labelledby="navbarDropdown">
+          <%= render partial: 'layouts/notifications', locals: { notifications: @notifications, unread_count: @unread_count, read_count:
+@read_count  }%>
+      </ul>
+    </div>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasNavbar" aria-controls="offcanvasNavbar" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="offcanvas offcanvas-end mx-lg-auto" style="max-width: 70% !important;" tabindex="-1" id="offcanvasNavbar" aria-labelledby="offcanvasNavbarLabel">
+       <div class="offcanvas-header">
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+      </div>
+      <div class="offcanvas-body">
+      <ul class="navbar-nav mb-2 mb-lg-0" data-controller="responsive-nav" data-responsive-nav-classname="actual" data-action="click->responsive-nav#clickMainNav">
+        <li class="nav-item">
+          <%= link_to 'All events', root_path, data: { turbo_frame: 'page_content' }, class: "nav-link actual active", 'aria-selected': "true" %>
+        </li>
+        <li class="nav-item">
+          <%= link_to 'Add new Event', new_event_path, data: { turbo_frame: 'page_content', locals: Event.new }, class: "nav-link actual" %>
+        </li>
+        <li class="nav-item">
+          <%= link_to 'All My events', user_path(current_user.id), data: { turbo_frame: 'page_content' }, class: "nav-link actual" %>
+        </li>
+        <li class="nav-item">
+          <%= link_to 'All users', users_path, data: { turbo_frame: 'page_content' }, class: "nav-link actual" %>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" id="dropdown-list-expand-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            Account
+          </a>
+          <ul class="dropdown-menu dropdown-menu-lg-end">
+<li class="dropdown-item">
+  <%= link_to "Edit profile", edit_user_registration_path,  data: { turbo_frame: 'page_content', locals: current_user, template: "devise/registrations/edit" }, method: :get, class: "dropdown-item actual" %>
+</li>
+            <li><hr class="dropdown-divider"></li>
+            <li><%= button_to "Sign out", destroy_user_session_path, method: :delete, turbo_method: :delete, class: "dropdown-item p-1 text-center text-light m-auto btn bg-danger actual", style:"max-width: 70% !important;" %></li>
+          </ul>
+        </li>
+        </li>
+      </ul>
+      </div>
+  <% else %>
+    <ul class="navbar-nav mb-2 mb-lg-0 d-flex flex-row justify-content-between" style="width: 100% !important;">
+      <li class="nav-item"><%= link_to "Sign in", new_user_session_path, method: :get, class: "nav-link" %></li>
+      <li class="nav-item"><%= link_to "Register", new_user_registration_path, method: :get, class: "nav-link" %>
+    </ul>
+  <% end %>
+    </div>
+  </div>
+</nav>

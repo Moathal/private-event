@@ -1,0 +1,17 @@
+<h2 class="m-1"><%= attendance.attendee.fullname %></h2>
+<small , class="m-1"><%= attendance.attendee.birthday %></small>
+<% if attendance.invited_user == true %>
+  <% if logged_in_user == event.creator %>
+
+    <%= render "events/attendance_status", status: attendance.status %>
+
+    <div class="d-flex justify-content-between">
+      <%= button_to "Cancel Invitation", cancel_invitation_event_path(event.id), method: :post, params: { attendance_id: attendance.id }, data: { attendee_id: attendance.attendee_id }, class: "btn bg-danger text-light m-2" %>
+    </div>
+  <% elsif attendance.status == 'pending' && logged_in_user.id == attendance.attendee_id %>
+    <div class="d-flex justify-content-between">
+      <%= button_to "Accept", accept_invite_event_path(event.id), method: :post, params: { attendance_id: attendance.id }, data: { attendee_id: attendance.attendee_id }, class: "btn bg-success text-light m-2" %>
+      <%= button_to "Reject", reject_invite_event_path(event.id), method: :post, params: { attendance_id: attendance.id }, data: { attendee_id: attendance.attendee_id }, class: "btn bg-danger text-light m-2" %>
+    </div>
+  <% end %>
+<% end %>

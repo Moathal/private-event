@@ -1,64 +1,18 @@
-<h1>The Event</h1>
-<h2><%= @event.name %></h2>
-<h3> in <%= @event.location %></h3>
-<h3> AT <%= @event.date %></h3>
-<h3> by <%= @event.creator.fullname %></h3>
-
-<% if !current_user.nil? && current_user.id != @event.creator_id %>
-  <% if !@unattending_users.include?(current_user) || @attend.present? ? !['pending', 'canceled'].include?(@attend.status) : false %>
-    <%= button_to "Cancel Attendance", attend_event_path(@event), method: :delete, remote: true %>
-  <% else %>
-    <%= button_to "Attend", attend_event_path(@event), method: :post, remote: true %>
-  <% end %>
-<% elsif current_user && current_user.id == @event.creator.id %>
-  <%= button_to "Cancel the event", @event, method: :delete, data: { confirm: "Are you sure you want to cancel this event?!" }, remote: true %>
-  <%= link_to 'Edit event', edit_event_path(@event.id) %>
-  <% if @unattending_users.present? %>
-    <%= form_with(url: invite_event_path) do |form| %>
-      <% @unattending_users.each do |user| %>
-         <label>
-          <%= form.check_box :user_ids, { multiple: true }, user.id, nil %>
-          <%= user.fullname %>
-        </label>
+  <%= turbo_frame_tag 'page_content', class: "container", style: "align-self: center !important;" do %>
+    <div class="card d-flex flex-row justify-content-between p-3 m-1"> 
+      <div>
+        <h2><strong><%= @event.name %> </strong> EVENT</h2>
+        <h6> in <%= @event.location %></h6>
+        <h6> AT <%= @event.date %></h6>
+        <h6> by <%= @event.creator.fullname %></h6>
+      </div>
+      <% if current_user.id == @event.creator_id %>
+        <div class="d-flex flex-column gap-1 justify-content-end">
+          <%= link_to 'Edit the event', edit_event_path(@event.id), class: "btn border-rounded bg-success text-light" %>
+          <%= button_to "Cancel the event", @event, method: :delete, data: { confirm: "Are you sure you want to cancel this event?!" }, remote: true, class: "btn border-rounded bg-danger text-light" %>
+        </div>
       <% end %>
-      <%= form.hidden_field :event_id, value: @event.id %>
-      <%= form.submit "Invite" %>
-    <% end %>
-  <% else %>
-    <h5>No Users!!</h5>
-  <% end %>
+    </div> 
+<%= turbo_stream_from @event, "#{current_user.id}-attendance" %>
+<%= render 'events/attendances', attendances: @event.attendances, creator: @event.creator, event: @event, unattending_users: @unattending_users, attend: @attend, logged_in_user: current_user %>
 <% end %>
-
-<h2>Attendances</h2>
-<ul>
-<li><%= @event.creator.fullname %></li>
-  <% if @event.attendances.any? %>
-    <% @event.attendances.each do |attendance| %>
-      <% if attendance.status != "canceled" && attendance.status != "rejected" %>
-        <li>
-          <%= attendance.user.fullname %>
-          <% if attendance.invited_user == true %>
-            <% if current_user %>
-              <% if current_user == @event.creator %>
-                <%= button_to "Cancel Invitation", cancel_invitation_event_path(@event.id), method: :post, params: { attendance_id: attendance.id }, data: { user_id: attendance.user.id } %>
-            <br>
-            <%= attendance.status %>
-              <% elsif attendance.status == 'pending' %>
-              <div class="card">
-                <%= button_to "Accept Invitation", accept_invite_event_path(@event.id), method: :post, params: { attendance_id: attendance.id }, data: { user_id: attendance.user.id } %>
-                <%= button_to "reject Invitation", reject_invite_event_path(@event.id), method: :post, params: { attendance_id: attendance.id }, data: { user_id: attendance.user.id } %>
-              </div>
-              <% end %>
-            <% end %>
-         <% end %>
-       </li>
-            <br>
-      <% end %>
-    <% end %>
-  <% end %>
-</ul>
-
-<div style="display: flex; flex-direction: row; gap: 1rem;">
-  <%= link_to 'All events', events_path %>
-  <%= link_to 'All users', users_path %>
-</div>

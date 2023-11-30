@@ -1,0 +1,11 @@
+// Entry point for your Sass build
+// Configuration
+@import "config/variables";
+@import "config/reset";
+@import "config/animations";
+
+// Components
+@import "components/error_message";
+@import "components/visually_hidden";
+@import "components/flash";
+@import "components/notifications";

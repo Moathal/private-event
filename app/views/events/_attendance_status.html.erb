@@ -1,0 +1,8 @@
+<% case status %>
+<% when "pending" %>
+    <span class="badge rounded-pill bg-info text-disabled"><%= status.capitalize %></span>
+<% when "accepted" %>
+    <span class="badge rounded-pill bg-success text-light"><%= status.capitalize %></span>
+<% when "rejected" %>
+    <span class="badge rounded-pill bg-danger text-light"><%= status.capitalize %></span>
+<% end %>

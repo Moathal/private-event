@@ -1,0 +1,47 @@
+<%= turbo_frame_tag "attendances" do %>
+  <% if logged_in_user.id != creator.id %>
+      <%= render 'events/attend_button', attend: attend, unattending_users: unattending_users, event: event, logged_in_user: logged_in_user %>
+  <% end %>
+
+  <ul class="nav nav-tabs mt-4" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link tab-link active" id="attendees-tab" data-bs-toggle="tab" data-bs-target="#attendees" type="button" role="tab" aria-controls="attendees" aria-selected="true" data-controller="responsive-nav" data-responsive-nav-classname="tab-pane" data-responsive-nav-ele-id="attendees" data-action="click->responsive-nav#clickEventNav">
+        <h4>Attendances</h4></button>
+    </li>
+    <% if logged_in_user.id == creator.id %>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link tab-link" id="users-tab" data-bs-toggle="tab" data-bs-target="#users" type="button" role="tab" aria-controls="users" aria-selected="false" data-controller="responsive-nav" data-responsive-nav-classname="tab-pane" data-responsive-nav-ele-id="users" data-action="click->responsive-nav#clickEventNav"><h4>Users to invite</h4></button>
+      </li>
+    <% end %>    
+  </ul>
+
+  <div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="attendees" role="tabpanel" aria-labelledby="attendees-tab" >
+        <div class="d-flex flex-column justify-content-center align-items-center g-2">
+    <ul class="d-flex flex-wrap justify-content-center align-items-center g-1">
+      <% if attendances.any? %>
+        <% attendances.each do |attendance| %>
+          <% if attendance.status != "canceled" && attendance.status != "rejected" %>
+             <label>
+              <div class="card m-2 p-2">
+                <%= render 'events/attendee', event: event, logged_in_user: logged_in_user, attendance: attendance %>
+              </div>
+             </label>
+          <% end %>
+        <% end %>
+      <% else %>
+        <h3 class="m-auto">No one is attending!!</h3>
+      <% end %>
+    </ul>
+  </div>
+
+    </div>
+    <% if logged_in_user.id == creator.id %>
+      <div class="tab-pane fade" id="users" role="tabpanel" aria-labelledby="users-tab">
+        <div>
+          <%= render 'events/users_invited_or_to_invite', event: event, logged_in_user: logged_in_user, unattending_users: unattending_users %>
+        </div> 
+      </div>
+    <% end %>
+  </div>
+<% end %>

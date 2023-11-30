@@ -1,6 +1,8 @@
-require_relative "boot"
+# frozen_string_literal: true
 
-require "rails/all"
+require_relative 'boot'
+
+require 'rails/all'
 
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
@@ -8,9 +10,6 @@ Bundler.require(*Rails.groups)
 
 module PrivateEvent
   class Application < Rails::Application
-    # Use the responders controller from the responders gem
-    config.app_generators.scaffold_controller :responders_controller
-
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
 
@@ -21,6 +20,5 @@ module PrivateEvent
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
-    config.autoload_paths << "#{Rails.root}/app/channels/concerns"
   end
 end

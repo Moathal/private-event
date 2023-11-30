@@ -1,0 +1,11 @@
+<div class="row">
+  <div class="col-sm-6">
+    <div class="card">
+      <div class="card-body">
+        <h5 class="card-title"><%= user.fullname %></h5>
+        <h6 class="card-text"><strong>AGE: </strong><%= ((Time.zone.now - birthday.to_time) / 1.year.seconds).floor %><h6>
+        <a href="#" class="btn btn-info">Go somewhere</a>
+      </div>
+    </div>
+  </div>
+</div>

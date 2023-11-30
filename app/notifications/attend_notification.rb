@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 #  This class is to deliver Attendance notification
- # - Triggered by Attendance model.
- # - It deals with event invitations and attendances
+# - Triggered by Attendance model.
+# - It deals with event invitations and attendances
 
 ## The call for this class methods happens in _notification.html.erb.
 #

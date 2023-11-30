@@ -1,9 +1,25 @@
-<h2>Edit <%= resource_name.to_s.humanize %></h2>
+<%= turbo_frame_tag "page_content", calss: "d-flex flex-column" do %>
+<div class="d-flex justify-content-between gap-sm-3 mb-5 flex-wrap">
+<h2 class="text-muted">EDIT PROFILE</h2>
+  <%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?", turbo_confirm: "Are you sure?", turbo_frame: "_top" }, method: :delete, class: "btn bg-danger text-light" %>
+</div>
 
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
+<%= form_for(resource, as: resource_name, url: registration_path(resource_name), html: { 'data-turbo' => "false", method: :put, class: "d-flex flex-column justify-content-center"  }) do |f| %>
   <%= render "devise/shared/error_messages", resource: resource %>
 
-  <div class="field">
+  <div class="d-flex flex-row flex-wrap">
+    <div class="field m-1" style="max-width: 40%">
+      <%= f.label :fullname %><br />
+      <%= f.text_field :fullname, autofocus: true, autocomplete: "fullname" %>
+    </div>
+    
+    <div class="field m-1" style="max-width: 40%;">
+      <%= f.label :birthday %><br />
+      <%= f.date_field :birthday, autofocus: true, autocomplete: "birthday" %>
+    </div>
+  </div>
+
+  <div class="field m-1" style="max-width: 40%;">
     <%= f.label :email %><br />
     <%= f.email_field :email, autofocus: true, autocomplete: "email" %>
   </div>
@@ -12,7 +28,7 @@
     <div>Currently waiting confirmation for: <%= resource.unconfirmed_email %></div>
   <% end %>
 
-  <div class="field">
+  <div class="field m-1" style="min-width: 100%;">
     <%= f.label :password %> <i>(leave blank if you don't want to change it)</i><br />
     <%= f.password_field :password, autocomplete: "new-password" %>
     <% if @minimum_password_length %>
@@ -21,23 +37,20 @@
     <% end %>
   </div>
 
-  <div class="field">
+  <div class="field m-1" style="min-width: 100%;">
     <%= f.label :password_confirmation %><br />
     <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
   </div>
 
-  <div class="field">
+  <div class="field m-1" style="min-width: 100%;">
     <%= f.label :current_password %> <i>(we need your current password to confirm your changes)</i><br />
     <%= f.password_field :current_password, autocomplete: "current-password" %>
   </div>
 
-  <div class="actions">
-    <%= f.submit "Update" %>
+  <div class="actions ms-1 my-2" style="max-width: 40%;">
+    <%= f.submit "Update", class: "btn bg-danger text-light" %>
   </div>
 <% end %>
 
-<h3>Cancel my account</h3>
-
-<div>Unhappy? <%= button_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?", turbo_confirm: "Are you sure?" }, method: :delete %></div>
-
 <%= link_to "Back", :back %>
+<% end %>

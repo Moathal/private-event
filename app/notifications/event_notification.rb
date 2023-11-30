@@ -1,9 +1,10 @@
+# frozen_string_literal: true
+
 #  This class is to deliver Event notification
- # - Triggered by Event model.
- # - It deals with event create and update
+# - Triggered by Event model.
+# - It deals with event create and update
 
 ## The call for this class methods happens in _notification.html.erb.
-
 
 class EventNotification < Noticed::Base
   # Add your delivery methods
@@ -20,13 +21,13 @@ class EventNotification < Noticed::Base
     event = params[:event]
     if action == 'create'
       "#{creator.fullname} added new event"
-    else 
+    else
       "The event #{event.name} has been updated!!"
     end
   end
 
   # The link for the event when notification is clicked
   def url
-    events_path(params[:event])
+    event_path(params[:event])
   end
 end

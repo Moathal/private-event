@@ -1,0 +1,5 @@
+ <% if Array(unattending_users).exclude?(logged_in_user) || attend.present? ? ['pending', 'canceled'].exclude?(attend.status) : false %>
+    <%= button_to "Cancel Attendance", attend_event_path(event), method: :delete, remote: true, class: "btn bg-danger text-light m-2" %>
+<% else %>
+    <%= button_to "Attend", attend_event_path(event), method: :post, remote: true, class: "btn bg-success text-light m-2" %>
+<% end %>
