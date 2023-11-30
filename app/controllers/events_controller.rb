@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+## Controls events and its attendance (attend, invite) 
 class EventsController < ApplicationController
   include EventsHelper
   before_action :authenticate_user!
@@ -31,15 +32,13 @@ class EventsController < ApplicationController
       respond_to do |format|
         format.html
         format.turbo_stream do
-          flash.now[:notice] = 'Event is created!'
-          render turbo_stream: turbo_stream.replace('page_content', template: 'events/show') 
+          render turbo_stream: turbo_stream.replace('page_content', template: 'events/show')
         end
       end
     else
       respond_to do |format|
         format.html
-        format.turbo_stream do 
-          flash.now[:notice] = 'All fields must be filled!'
+        format.turbo_stream do
           render turbo_stream: turbo_stream.replace('page_content', template: 'events/new')
         end
       end
@@ -52,18 +51,12 @@ class EventsController < ApplicationController
 
   def invite
     user_ids = params[:user_ids]
-    unless user_ids.nil?
-      user_ids.each do |user_id|
-        attendance = Attendance.find_by(attendee_id: user_id, event_id: @event.id)
-        if attendance.present?
-          attendance.update(status: :pending, invited_user: true)
-        else
-          attendance = Attendance.create!(event_id: @event.id, host_id: current_user.id, attendee_id: user_id,
-                                          status: :pending, invited_user: true)
-        end
-        Attendance.notify_recipient(attendance.status, @event, @event.creator, attendance.attendee, @event.id)
-      end
-  end
+    return if user_ids.nil?
+
+    user_ids.each do |user_id|
+      attendance = manipulate_attendance_record
+      Attendance.notify_recipient(attendance.status, @event, @event.creator, attendance.attendee, @event.id)
+    end
   end
 
   def cancel_invitation
@@ -103,11 +96,10 @@ class EventsController < ApplicationController
   def update
     if @event.update(event_params)
       respond_to do |format|
-          format.html
-          format.turbo_stream do 
-           flash.now[:notice] = 'event is updated successfully!'
-           render turbo_stream: turbo_stream.replace('page_content', template: 'events/show')   
-          end
+        format.html
+        format.turbo_stream do
+          render turbo_stream: turbo_stream.replace('page_content', template: 'events/show')
+        end
       end
     else
       render :edit
@@ -119,8 +111,7 @@ class EventsController < ApplicationController
     @events = Event.all.where(public: true).or(Event.where(creator: current_user))
     respond_to do |format|
       format.html
-      format.turbo_stream do 
-        flash.now[:notice] = 'Event was destroyed successfully!'
+      format.turbo_stream do
         redirect_to events_path
       end
     end

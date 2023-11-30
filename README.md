@@ -51,7 +51,7 @@ After you're finished please remove all the comments and instructions!
 
 # 📖 [Private-events] <a name="about-project"></a>
 
-> A site lets user create events, and attend events. An event can be attended by many users, and take place at specific location & date.  
+> A site lets user create events private or public, and attend events. An event can be attended by many users, and take place at specific location, date and time. All pages are real time updated and all uses are notified thanks to noticed and hotrails gems. Tried to use as much association case in the database as possible to push active record to its peak. Used sass, Bootstrap and stimulus for styling and responsiveness all embedded in webpack.
 
 
 ## 🛠 Built With <a name="built-with"></a>
@@ -63,6 +63,13 @@ After you're finished please remove all the comments and instructions!
 <summary>Database</summary>
   <ul>
     <li><a href="https://www.postgresql.org/">PostgreSQL</a></li>
+    <li><a href="https://github.com/heartcombo/devise">Devise</a></li>
+    <li><a href="https://rubygems.org/gems/noticed/versions/1.6.3">Noticed</a></li>
+    <li><a href="https://hotwired.dev">Hotwire</a></li>
+    <li><a href="https://redis.io">Redis</a></li>
+    <li><a href="https://getbootstrap.com">Bootstrap</a></li>
+    <li><a href="https://sass-lang.com">SASS</a></li>
+    <li><a href="https://webpack.js.org">Webpack</a></li>
   </ul>
 </details>
 
@@ -70,9 +77,8 @@ After you're finished please remove all the comments and instructions!
 
 ### Key Features <a name="key-features"></a>
 
-- **[Delploy on render]** - Delploy on heroku
-- **[Improve security]** - Improve security
-- **[ Add testes ]** -  Add testes
+- **[Delploy on render]** - realtime updates and notifications
+- **[Improve security]** - Responsive
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -101,19 +107,30 @@ To get a local copy up and running, follow these steps.
 ### Prerequisites
 
 - [x] A web browser like Google Chrome.
-- [x] A code editor like Visual Studio Code with Git and Ruby.
+- [x] A nodeJS and yarn.
+- [x] A code editor like Visual Studio Code with Git, Ruby and redis.
 
 You can check if Git is installed by running the following command in the terminal.
 
 ```
 $ git --version
+
 ```
 
-Likewise for Ruby installation.
+Likewise for Ruby installation (on UBUNTU and MAC PC's or windows only)
 
 ```
 $ ruby --version && irb
+
 ```
+
+Finally you can check if redis installed by this command.
+
+```
+redis-server --version
+
+```
+
 
 ### Install
 
@@ -133,7 +150,7 @@ $ rails db:create db:migrate
 
 ```
 
-### Run tests
+### Run tests (SOON)
 
 To install rspec, in the terminal kindly run this command
 
@@ -149,11 +166,25 @@ $ rspec ./spec/#{filename}_spec.rb
 ```
 
 ## Run the app
-To run the app you need to run this command in the terminal
+
+If its your first time to run the app run this command
+
+```
+$ bin/setup
 
 ```
 
-$ rails s
+The app is using redis so first run the redis server
+
+```
+$ redis-server
+
+```
+
+To run the app you need to run this command in the terminal
+
+```
+$ bin/div
 
 ```
 
@@ -214,7 +245,7 @@ If you like this project give as a star! ⭐️
 
 - **[How I can run this project?]**
 
-  - [After cloning repository, run rails server.]
+  - [After cloning repository, run bin/setup then in another terminal redis-server and finally bin/dev.]
 
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>

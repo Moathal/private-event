@@ -1,6 +1,17 @@
 # frozen_string_literal: true
 
+## Methods to help events controller in managing actions
 module EventsHelper
+  def manipulate_attendance_record
+    attendance = Attendance.find_by(attendee_id: user_id, event_id: @event.id)
+    if attendance.present?
+      attendance.update(status: :pending, invited_user: true)
+    else
+      Attendance.create!(event_id: @event.id, host_id: current_user.id, attendee_id: user_id,
+                                      status: :pending, invited_user: true)
+    end
+  end
+
   def accept_invite_with_attend_record(user_attend)
     if user_attend.status == 'canceled'
       flash[:error] = 'Invitation has been canceled.'
@@ -42,8 +53,8 @@ module EventsHelper
   def unattending_users
     return [] if @event.nil?
 
-    attending_users = Attendance.where.not(status: ["canceled", "rejected"]).where(event_id: @event.id)
-    attending_ids = attending_users.pluck(:id) + [ @event.creator_id ]
+    attending_users = Attendance.where.not(status: %w[canceled rejected]).where(event_id: @event.id)
+    attending_ids = attending_users.pluck(:id) + [@event.creator_id]
     User.where.not(id: attending_ids)
   end
 

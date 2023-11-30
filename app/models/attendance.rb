@@ -25,7 +25,7 @@ class Attendance < ApplicationRecord
                                      creator:,
                                      attendances: attending_users_attendances,
                                      attend: attendance,
-                                     unattending_users: unattending_users,
+                                     unattending_users:,
                                      logged_in_user: user },
                            target: 'attendances')
     end
