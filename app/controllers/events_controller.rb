@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-## Controls events and its attendance (attend, invite) 
+## Controls events and its attendance (attend, invite)
 class EventsController < ApplicationController
   include EventsHelper
   before_action :authenticate_user!
@@ -53,7 +53,7 @@ class EventsController < ApplicationController
     user_ids = params[:user_ids]
     return if user_ids.nil?
 
-    user_ids.each do |user_id|
+    user_ids.each do |_user_id|
       attendance = manipulate_attendance_record
       Attendance.notify_recipient(attendance.status, @event, @event.creator, attendance.attendee, @event.id)
     end
